@@ -1,0 +1,299 @@
+/* reset – fick alles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a0a;
+    color: #e6e6e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem;
+}
+
+.content {
+    max-width: 640px;
+    width: 100%;
+}
+
+/* ===== MONOSPACE FÜR ALLE TEXTLASTIGEN ELEMENTE ===== */
+.status,
+.meta,
+.article,
+.command,
+.nowplaying,
+.counter,
+.postline,
+.footer {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+}
+
+/* ===== Statuszeile ===== */
+.status {
+    font-size: 1.2rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #8e8e8e;
+    margin-bottom: 2rem;
+    border: none;
+}
+
+/* ===== Command‑Wrapper (nur index) ===== */
+.command-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.command {
+    font-size: 2rem;
+    font-weight: 450;
+    color: #f0f0f0;
+    display: inline-block;
+}
+
+/* Font-Family wird jetzt von der zentralen Regel geerbt */
+
+.prompt {
+    color: #ff5c5c;
+    user-select: none;
+    animation: blink 1s steps(1, end) infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* ===== Nowplaying / Counter ===== */
+.nowplaying,
+.counter {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: #999;
+}
+
+.label {
+    color: #6ee7b7;
+}
+
+#track,
+#counter {
+    display: inline-block;
+    margin-top: .4rem;
+    color: #ddd;
+}
+
+/* ===== Post‑Liste ===== */
+.postline {
+    color: #bbb;
+    margin: .2rem 0;
+}
+
+.postline a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.postline a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* ===== Footer ===== */
+.footer {
+    margin-top: 4rem;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* ===== Artikel‑Styles (nur post) ===== */
+.article {
+    color: #ddd;
+    line-height: 1.8;
+    font-size: 1.15rem;
+}
+
+.article h1,
+.article h2,
+.article h3 {
+    color: #fff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.article p {
+    margin: 1rem 0;
+}
+
+.article ul,
+.article ol {
+    margin: 1rem 0 1rem 2rem;
+}
+
+.article code {
+    background: #1a1a1a;
+    padding: .15rem .35rem;
+    border-radius: 3px;
+}
+
+.article pre {
+    background: #111;
+    padding: 1rem;
+    overflow: auto;
+    margin: 1.5rem 0;
+}
+
+.article blockquote {
+    border-left: 3px solid #444;
+    padding-left: 1rem;
+    color: #aaa;
+    margin: 1rem 0;
+}
+
+.article table {
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.article th,
+.article td {
+    border: 1px solid #333;
+    padding: .5rem;
+}
+
+.article hr {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 2rem 0;
+}
+
+.article .footnotes {
+    margin-top: 3rem;
+    font-size: .9rem;
+    color: #aaa;
+}
+
+/* ===== Meta (nur post) ===== */
+.meta {
+    color: #999;
+    margin: 1rem 0 2rem;
+    line-height: 1.6;
+}
+
+.meta .key {
+    color: #6ee7b7;
+}
+
+a {
+    color: #7dd3fc;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 680px) {
+    body {
+        padding: 1.5rem;
+    }
+    .command {
+        font-size: 1.4rem;
+    }
+    .status {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* ===== Scrollbar ===== */
+.command-wrapper::-webkit-scrollbar {
+    height: 5px;
+    background: #1e1e1e;
+}
+
+.command-wrapper::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 0;
+}
+
+/* ===== WRAPPER FÜR HORIZONTALES SCROLLEN (nur index) ===== */
+.command-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+}
+
+.command {
+    font-size: 2rem;
+    font-weight: 450;
+    color: #f0f0f0;
+    display: inline-block;
+    white-space: nowrap;      /* ← zusätzliche Sicherheit */
+}
+
+.prompt {
+    color: #ff5c5c;
+    user-select: none;
+    animation: blink 1s steps(1, end) infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* ===== Nowplaying / Counter ===== */
+.nowplaying,
+.counter {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: #999;
+    white-space: nowrap;      /* ← kein Umbruch */
+    overflow-x: auto;         /* ← falls doch mal zu lang */
+}
+
+.label {
+    color: #6ee7b7;
+}
+
+#track,
+#counter {
+    display: inline-block;
+    margin-top: .4rem;
+    color: #ddd;
+    white-space: nowrap;      /* ← kein Umbruch */
+}
+
+/* ===== Post‑Liste ===== */
+.postline {
+    color: #bbb;
+    margin: .2rem 0;
+    white-space: nowrap;      /* ← kein Umbruch */
+    overflow-x: auto;         /* ← falls zu lang */
+}
+
+.postline a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.postline a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* ===== Meta (nur post) ===== */
+.meta {
+    color: #999;
+    margin: 1rem 0 2rem;
+    line-height: 1.6;
+    white-space: nowrap;      /* ← kein Umbruch */
+    overflow-x: auto;         /* ← falls zu lang */
+}
+
+.meta .key {
+    color: #6ee7b7;
+}

@@ -1,0 +1,25 @@
+# Composer
+vendor/
+composer.lock
+
+# Counter
+counter.txt
+
+# Backup
+_backup/
+*.bak
+
+# Systemdateien
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Nur lokale Konfiguration (nicht ins Repo)
+.env
+*.local

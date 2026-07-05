@@ -1,0 +1,25 @@
+no-cms/
+├── assets/
+│   ├── style.css
+│   └── script.js
+├── inc/
+│   ├── functions.php
+│   └── header.php
+├── posts/
+│   └── (leer – Beispiel-Posts werden nicht mitgeliefert)
+├── images/
+│   └── (leer)
+├── 404.php
+├── composer.json
+├── counter.php
+├── feed.php
+├── footer.php
+├── index.php
+├── lastfm.php
+├── post.php
+├── robots.txt
+├── rss.php
+├── sitemap.php
+├── .gitignore
+├── README.md
+└── LICENSE
