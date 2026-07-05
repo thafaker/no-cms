@@ -23,3 +23,7 @@ Thumbs.db
 # Nur lokale Konfiguration (nicht ins Repo)
 .env
 *.local
+# Umgebungsvariablen
+.env
+.env.local
+.env

@@ -24,7 +24,7 @@ composer install
 
 ---
 
-### 3️⃣ `LICENSE` (MIT)
+### `LICENSE` (MIT)
 
 ```text
 MIT License
