@@ -11,7 +11,6 @@ Keine Datenbank. Markdown Dateien.
 - **Last.fm-Integration** – zeigt den aktuellen Song
 - **Besucherzähler** – ohne Tracking
 - **Syntax Highlighting** – für Codebeispiele
-- **Embed-Codes** – YouTube, Spotify, etc.
 - **Admin Interface** - to edit posts, create new or upload a picture
 
 ## 🛠️ Installation
