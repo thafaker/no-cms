@@ -1,4 +1,5 @@
 <?php
+// index.php of NoCMS Jan Montag 2026
 require_once 'inc/functions.php';
 
 $posts = getPosts();
