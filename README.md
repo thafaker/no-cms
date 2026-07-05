@@ -1,7 +1,7 @@
-# NoCMS – Ein Blog, der keine Datenbank braucht
+# NoCMS – Kleines Weblog ohne Datenbank in PHP
 
 **NoCMS** ist ein minimalistisches, flat-file-basiertes Weblog-System.  
-Keine Datenbank.
+Keine Datenbank. Markdown Dateien.
 
 ## 📦 Das ist drin
 
@@ -19,7 +19,7 @@ Keine Datenbank.
 git clone https://github.com/thafaker/no-cms.git
 cd no-cms
 composer install
-
+```
 
 ---
 
@@ -47,3 +47,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
