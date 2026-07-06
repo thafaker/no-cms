@@ -296,3 +296,11 @@ a {
     background: var(--scrollbar-thumb);
     border-radius: 0;
 }
+
+/* Bilder entsprchend resizen */
+.article img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto; /* Optional: Zentriert das Bild und gibt ihm etwas Abstand */
+}
