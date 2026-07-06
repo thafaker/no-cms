@@ -1,3 +1,6 @@
+// Hallo, all unser Javascript hier rein geballert was wöhrend
+// der Refakturierung entstand. Ich bin gespannt, wie weit wir kommen.
+// Und mit wir meine ich mich.
 // Last.fm – aktueller Track
 async function loadTrack() {
     try {
