@@ -5,13 +5,13 @@ Keine Datenbank. Markdown Dateien.
 
 ## 📦 Das ist drin
 
-- **Markdown** – schreiben, wie es dir gefällt
+- **Markdown** – weil es sich anbietet.
 - **Frontmatter** – Titel, Datum, Tags
 - **Automatische Sitemap & RSS-Feed**
 - **Last.fm-Integration** – zeigt den aktuellen Song
 - **Besucherzähler** – ohne Tracking
 - **Syntax Highlighting** – für Codebeispiele
-- **Admin Interface** - to edit posts, create new or upload a picture
+- **Admin Interface**  - Neuen Beitrag erstellen, alte bearbeiten
 
 ## 🛠️ Installation
 

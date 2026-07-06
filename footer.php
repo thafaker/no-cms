@@ -1,6 +1,6 @@
 <div class="footer">
     <div>$ uptime</div>
     <div style="color:#666; margin-top:0.5rem;">
-        © <?= date('Y') ?> Jan Montag NoCMS · posts powered by flat files
+        © <?= date('Y') ?> Jan Montag <a href="https://github.com/thafaker/no-cms">NoCMS</a> · posts powered by flat files
     </div>
 </div>
