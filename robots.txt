@@ -4,4 +4,4 @@ Allow: /
 Sitemap: https://janmontag.de/sitemap.php
 
 # RSS Feed
-# https://janmontag.de/rss.php
+# https://janmontag.de/feed.xml

@@ -5,7 +5,9 @@
 // Her acid reign
 require_once 'inc/functions.php';
 
-$posts = getPosts();
+//$posts = getPosts();
+// zeige nicht mehr als 5 Beiträge auf der Startseite
+$posts = array_slice(getPosts(), 0, 5);
 
 $pageTitle = '404 · JanMontag.de';
 require 'inc/header.php';
@@ -32,10 +34,10 @@ require 'inc/header.php';
 </div>
 
 <div class="counter">
-    <span class="label">$ ls -la posts/</span>
-    //<?php foreach ($posts as $post): ?>
-    // Holt alle Posts und schneidet das Array nach den ersten 5 Einträgen ab
-	$posts = array_slice(getPosts(), 0, 5);
+
+<div class="counter">
+    <span class="label">$ ls -la posts/</span> 
+    <?php foreach ($posts as $post): ?>
         <?php
         $name = basename($post);
         $date = date("M d H:i", filemtime($post));
