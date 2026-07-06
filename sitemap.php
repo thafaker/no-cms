@@ -8,7 +8,7 @@ $posts = getPosts();
 $baseUrl = 'https://janmontag.de';
 ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <!-- Startseite -->
+    <!-- Startseite | No Nazis -->
     <url>
         <loc><?= $baseUrl ?>/</loc>
         <lastmod><?= date('Y-m-d') ?></lastmod>
