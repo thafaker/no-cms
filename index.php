@@ -33,7 +33,9 @@ require 'inc/header.php';
 
 <div class="counter">
     <span class="label">$ ls -la posts/</span>
-    <?php foreach ($posts as $post): ?>
+    //<?php foreach ($posts as $post): ?>
+    // Holt alle Posts und schneidet das Array nach den ersten 5 Einträgen ab
+	$posts = array_slice(getPosts(), 0, 5);
         <?php
         $name = basename($post);
         $date = date("M d H:i", filemtime($post));
