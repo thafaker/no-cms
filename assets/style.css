@@ -1,13 +1,73 @@
-/* reset – fick alles */
+/* ===========================================
+   NO-CMS · Terminal Theme (Dark / Light)
+   =========================================== */
+
+/* reset – alles auf Anfang */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ─── CSS-Variablen (Standard: Dark Mode) ─── */
+:root {
+    --bg: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --text: #e6e6e6;
+    --text-secondary: #ddd;
+    --text-muted: #999;
+    --text-dim: #888;
+    --border: #333;
+    --accent: #6ee7b7;      /* Terminal-Grün */
+    --link: #7dd3fc;        /* Link-Blau */
+    --prompt: #ff5c5c;      /* Prompt-Rot */
+    --scrollbar-bg: #1e1e1e;
+    --scrollbar-thumb: #444;
+    --code-bg: #111;
+    --blockquote-border: #444;
+}
+
+/* ─── DEIN RETRO-LIGHT-MODE (per JS-Attribut gesteuert) ─── */
+html[data-theme="light"] {
+    --bg: #f5f5f0;          /* Dein augenschonendes Paper-White */
+    --bg-secondary: #e8e8e3;/* Passender, leicht abgesetzter Ton für Codeblöcke */
+    --text: #1a1a1a;        /* Dunkler Haupttext */
+    --text-secondary: #222;
+    --text-muted: #555;
+    --text-dim: #666;
+    --border: #ccc;
+    --accent: #2d8f6b;      /* Dein satteres Grün für hellen Grund */
+    --link: #0066cc;        /* Dein klassisches Terminal-Link-Blau */
+    --prompt: #cc3333;      /* Dein dezentes Signalrot */
+    --scrollbar-bg: #d0d0d0;
+    --scrollbar-thumb: #999;
+    --code-bg: #e8e8e3;
+    --blockquote-border: #aaa;
+}
+
+/* ─── Automatische Erkennung bei System-Lightmode (Fallback) ─── */
+@media (prefers-color-scheme: light) {
+    html:not([data-theme="dark"]) {
+        --bg: #f5f5f0;
+        --bg-secondary: #e8e8e3;
+        --text: #1a1a1a;
+        --text-secondary: #222;
+        --text-muted: #555;
+        --text-dim: #666;
+        --border: #ccc;
+        --accent: #2d8f6b;
+        --link: #0066cc;
+        --prompt: #cc3333;
+        --scrollbar-bg: #d0d0d0;
+        --scrollbar-thumb: #999;
+        --code-bg: #e8e8e3;
+        --blockquote-border: #aaa;
+    }
+}
+
 body {
-    background: #0a0a0a;
-    color: #e6e6e6;
+    background: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 400;
     line-height: 1.5;
@@ -16,6 +76,7 @@ body {
     align-items: center;
     justify-content: flex-start;
     padding: 2rem;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .content {
@@ -40,28 +101,38 @@ body {
     font-size: 1.2rem;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: #8e8e8e;
+    color: var(--text-muted);
     margin-bottom: 2rem;
     border: none;
+}
+
+/* Hover-Effekt für den Toggle-Button */
+#themeToggle {
+    color: var(--text-muted);
+    transition: color 0.1s ease;
+}
+#themeToggle:hover {
+    color: var(--accent);
 }
 
 /* ===== Command‑Wrapper (nur index) ===== */
 .command-wrapper {
     overflow-x: auto;
     white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
 }
 
 .command {
     font-size: 2rem;
     font-weight: 450;
-    color: #f0f0f0;
+    color: var(--text-secondary);
     display: inline-block;
+    white-space: nowrap;
 }
 
-/* Font-Family wird jetzt von der zentralen Regel geerbt */
-
 .prompt {
-    color: #ff5c5c;
+    color: var(--prompt);
     user-select: none;
     animation: blink 1s steps(1, end) infinite;
 }
@@ -75,46 +146,51 @@ body {
 .counter {
     margin-top: 2rem;
     font-size: 1rem;
-    color: #999;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow-x: auto;
 }
 
 .label {
-    color: #6ee7b7;
+    color: var(--accent);
 }
 
 #track,
 #counter {
     display: inline-block;
     margin-top: .4rem;
-    color: #ddd;
+    color: var(--text-secondary);
+    white-space: nowrap;
 }
 
 /* ===== Post‑Liste ===== */
 .postline {
-    color: #bbb;
+    color: var(--text-dim);
     margin: .2rem 0;
+    white-space: nowrap;
+    overflow-x: auto;
 }
 
 .postline a {
-    color: #ddd;
+    color: var(--text-secondary);
     text-decoration: none;
 }
 
 .postline a:hover {
-    color: #fff;
+    color: var(--link);
     text-decoration: underline;
 }
 
 /* ===== Footer ===== */
 .footer {
     margin-top: 4rem;
-    color: #888;
+    color: var(--text-dim);
     font-size: 0.9rem;
 }
 
 /* ===== Artikel‑Styles (nur post) ===== */
 .article {
-    color: #ddd;
+    color: var(--text-secondary);
     line-height: 1.8;
     font-size: 1.15rem;
 }
@@ -122,7 +198,7 @@ body {
 .article h1,
 .article h2,
 .article h3 {
-    color: #fff;
+    color: var(--text);
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
@@ -137,22 +213,23 @@ body {
 }
 
 .article code {
-    background: #1a1a1a;
+    background: var(--code-bg);
     padding: .15rem .35rem;
     border-radius: 3px;
 }
 
 .article pre {
-    background: #111;
+    background: var(--bg-secondary);
     padding: 1rem;
     overflow: auto;
     margin: 1.5rem 0;
+    border: 1px solid var(--border);
 }
 
 .article blockquote {
-    border-left: 3px solid #444;
+    border-left: 3px solid var(--blockquote-border);
     padding-left: 1rem;
-    color: #aaa;
+    color: var(--text-muted);
     margin: 1rem 0;
 }
 
@@ -163,35 +240,37 @@ body {
 
 .article th,
 .article td {
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     padding: .5rem;
 }
 
 .article hr {
     border: 0;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border);
     margin: 2rem 0;
 }
 
 .article .footnotes {
     margin-top: 3rem;
     font-size: .9rem;
-    color: #aaa;
+    color: var(--text-muted);
 }
 
 /* ===== Meta (nur post) ===== */
 .meta {
-    color: #999;
+    color: var(--text-muted);
     margin: 1rem 0 2rem;
     line-height: 1.6;
+    white-space: nowrap;
+    overflow-x: auto;
 }
 
 .meta .key {
-    color: #6ee7b7;
+    color: var(--accent);
 }
 
 a {
-    color: #7dd3fc;
+    color: var(--link);
 }
 
 /* ===== Responsive ===== */
@@ -211,89 +290,9 @@ a {
 /* ===== Scrollbar ===== */
 .command-wrapper::-webkit-scrollbar {
     height: 5px;
-    background: #1e1e1e;
+    background: var(--scrollbar-bg);
 }
-
 .command-wrapper::-webkit-scrollbar-thumb {
-    background: #444;
+    background: var(--scrollbar-thumb);
     border-radius: 0;
-}
-
-/* ===== WRAPPER FÜR HORIZONTALES SCROLLEN (nur index) ===== */
-.command-wrapper {
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 1rem;
-}
-
-.command {
-    font-size: 2rem;
-    font-weight: 450;
-    color: #f0f0f0;
-    display: inline-block;
-    white-space: nowrap;      /* ← zusätzliche Sicherheit */
-}
-
-.prompt {
-    color: #ff5c5c;
-    user-select: none;
-    animation: blink 1s steps(1, end) infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
-}
-
-/* ===== Nowplaying / Counter ===== */
-.nowplaying,
-.counter {
-    margin-top: 2rem;
-    font-size: 1rem;
-    color: #999;
-    white-space: nowrap;      /* ← kein Umbruch */
-    overflow-x: auto;         /* ← falls doch mal zu lang */
-}
-
-.label {
-    color: #6ee7b7;
-}
-
-#track,
-#counter {
-    display: inline-block;
-    margin-top: .4rem;
-    color: #ddd;
-    white-space: nowrap;      /* ← kein Umbruch */
-}
-
-/* ===== Post‑Liste ===== */
-.postline {
-    color: #bbb;
-    margin: .2rem 0;
-    white-space: nowrap;      /* ← kein Umbruch */
-    overflow-x: auto;         /* ← falls zu lang */
-}
-
-.postline a {
-    color: #ddd;
-    text-decoration: none;
-}
-
-.postline a:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-
-/* ===== Meta (nur post) ===== */
-.meta {
-    color: #999;
-    margin: 1rem 0 2rem;
-    line-height: 1.6;
-    white-space: nowrap;      /* ← kein Umbruch */
-    overflow-x: auto;         /* ← falls zu lang */
-}
-
-.meta .key {
-    color: #6ee7b7;
 }

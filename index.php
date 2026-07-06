@@ -10,7 +10,10 @@ require 'inc/header.php';
 
 <!-- .content wurde bereits in header.php geöffnet! -->
 
-<div class="status">404 — Gone</div>
+<div class="status" style="display: flex; justify-content: space-between; align-items: center;">
+    <span>404 — Gone</span>
+    <span id="themeToggle" style="cursor: pointer; font-size: 0.9rem; text-transform: none; letter-spacing: normal;">$ theme --toggle</span>
+</div>
 <div class="command-wrapper">
     <div class="command">
         <span class="prompt">$</span> rm -rf /

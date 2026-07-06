@@ -8,16 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'JanMontag.de') ?></title>
     <link rel="stylesheet" href="/assets/style.css">
-<!-- code highling klauen wir uns von der prism js -->
+
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
     <?php if (isset($includePrism) && $includePrism): ?>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+        <script>
+            const prismTheme = savedTheme === 'light' ? 'prism' : 'prism-tomorrow';
+            document.write('<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/' + prismTheme + '.min.css" rel="stylesheet" id="prism-css" />');
+        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
     <?php endif; ?>
-<!-- // code highling klauen wir uns von der prism js -->
-<!-- wir laden umami counter -->
+
      <script defer src="https://umami.wochenstart.com/script.js" data-website-id="5e4aceef-d428-4ef3-958d-df37654a6d59"></script>
-<!-- // wir laden umami counter -->
 </head>
 <body>
 <div class="content">

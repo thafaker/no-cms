@@ -40,3 +40,26 @@ document.addEventListener("DOMContentLoaded", function () {
         loadCounter();
     }
 });
+
+// Theme-Umschalter (Light / Dark Mode)
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("themeToggle");
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", function () {
+            const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            
+            // Attribut auf html-Tag setzen
+            document.documentElement.setAttribute("data-theme", newTheme);
+            // Im Browser speichern
+            localStorage.setItem("theme", newTheme);
+            
+            // Optional: Prism.js Code-Highlighting Theme live austauschen
+            const prismLink = document.getElementById("prism-css");
+            if (prismLink) {
+                const newPrismStyle = newTheme === "light" ? "prism" : "prism-tomorrow";
+                prismLink.href = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/${newPrismStyle}.min.css`;
+            }
+        });
+    }
+});

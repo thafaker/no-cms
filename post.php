@@ -57,8 +57,9 @@ require 'inc/header.php';
 
 <!-- .content wurde bereits in header.php geöffnet -->
 
-<div class="status">
-    $ cat <?= htmlspecialchars($file) ?>
+<div class="status" style="display: flex; justify-content: space-between; align-items: center;">
+    <span>$ cat <?= htmlspecialchars($file) ?></span>
+    <span id="themeToggle" style="cursor: pointer; font-size: 0.9rem; text-transform: none; letter-spacing: normal;">$ theme --toggle</span>
 </div>
 
 <div class="meta">
