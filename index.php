@@ -50,6 +50,11 @@ require 'inc/header.php';
             </a>
         </div>
     <?php endforeach; ?>
+
+    <div class="postline" style="margin-top: 1rem;">
+        <span class="prompt">$</span> 
+        <a href="archive.php" style="font-weight: bold;">ls -la archive/</a>
+    </div>
 </div>
 
 <!-- Footer (bleibt innerhalb von .content sonst kaputt mit die CSS) -->
