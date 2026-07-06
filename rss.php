@@ -1,4 +1,5 @@
 <?php
+// With that skill that was hers alone (C) Jan Montag 2026
 require_once 'inc/functions.php';
 
 header('Content-Type: application/rss+xml; charset=utf-8');

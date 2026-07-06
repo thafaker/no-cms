@@ -1,4 +1,5 @@
 <?php
+// IT HAPPENDE IN NOVEMBER (C) Jan Montag 2026
 require_once 'inc/functions.php';
 
 header('Content-Type: application/xml; charset=utf-8');

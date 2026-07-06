@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <link rel="alternate" type="application/rss+xml" title="Jan Montag" href="/feed.xml">
+    <!-- IT HAPPENED IN NOVEMBER -->
+    <link rel="alternate" type="application/rss+xml" title="Jan 'thafaker' Montag" href="/feed.xml">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="me" href="https://github.com/thafaker">
     <meta charset="UTF-8">

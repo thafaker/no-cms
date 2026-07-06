@@ -1,6 +1,7 @@
 <?php
 // Functions.php von Jan Montag 2026
 // composer autoloader - hoffentlich klappt das
+// In November
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use League\CommonMark\Environment\Environment;

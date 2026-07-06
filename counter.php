@@ -1,4 +1,6 @@
 <?php
+// Dies ist ien ganz einfacher Counter der bei Aufruf einfach um eins inkrementiert. 
+// Kein Tracking. Kein Schwindel. Einfach nur echte Gefühle.
 header('Content-Type: application/json');
 
 $file = __DIR__ . '/counter.txt';

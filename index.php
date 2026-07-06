@@ -1,5 +1,8 @@
 <?php
 // index.php of NoCMS Jan Montag 2026
+// The sore in my soul
+// The mark in my heart
+// Her acid reign
 require_once 'inc/functions.php';
 
 $posts = getPosts();
@@ -7,9 +10,7 @@ $posts = getPosts();
 $pageTitle = '404 · JanMontag.de';
 require 'inc/header.php';
 ?>
-
-<!-- .content wurde bereits in header.php geöffnet! -->
-
+<!-- lost and dumbfunded -->
 <div class="status" style="display: flex; justify-content: space-between; align-items: center;">
     <span>404 — Gone</span>
     <span id="themeToggle" style="cursor: pointer; font-size: 0.9rem; text-transform: none; letter-spacing: normal;">$ theme --toggle</span>
@@ -47,11 +48,8 @@ require 'inc/header.php';
     <?php endforeach; ?>
 </div>
 
-<!-- Footer (bleibt innerhalb von .content) -->
+<!-- Footer (bleibt innerhalb von .content sonst kaputt mit die CSS) -->
 <?php include "footer.php"; ?>
-
-<!-- .content wird in footer.php geschlossen? -->
-<!-- Falls nicht: hier ein </div> einfügen -->
 
 <script src="/assets/script.js" defer></script>
 <script defer src="https://umami.wochenstart.com/script.js" data-website-id="5e4aceef-d428-4ef3-958d-df37654a6d59"></script>
