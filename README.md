@@ -3,7 +3,7 @@
 **NoCMS** ist ein minimalistisches, flat-file-basiertes Weblog-System.  
 Keine Datenbank. Markdown Dateien.
 
-## 📦 Das ist drin
+## 📦 Alles was drin ist
 
 - **Markdown** – weil es sich anbietet.
 - **Frontmatter** – Titel, Datum, Tags
