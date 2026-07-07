@@ -77,31 +77,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 // ==========================================
 // 2. NORMALER FORMULAR-SUBMIT (POST SPEICHERN)
 // ==========================================
-// ==========================================
-// 2. NORMALER FORMULAR-SUBMIT (POST SPEICHERN)
-// ==========================================
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
-    $title = $_POST['title'];
+    // NEU: stripslashes(), um ungewollte Maskierungen vom Formular-Submit direkt zu säubern
+    $title = stripslashes($_POST['title']);
     $filenameInput = trim($_POST['filename'] ?? '');
-    $isEdit = !empty($_POST['is_edit_mode']); // Neu: Prüfen ob Edit-Modus aktiv
+    $isEdit = !empty($_POST['is_edit_mode']);
     
     // Automatische Namensgenerierung mit aktuellem Tag, falls leergelassen
     if (empty($filenameInput)) {
         $filename = date('Y-m-d') . '-' . slugify($title) . '.md';
     } else {
         $filenameInput = str_replace('.md', '', $filenameInput);
-        // WICHTIG: Wenn es ein Edit ist, NICHT slugify/kleinschreiben, um Case-Schnitt-Dopplungen zu vermeiden!
         $filename = ($isEdit) ? $filenameInput . '.md' : slugify($filenameInput) . '.md';
     }
     
     $date = $_POST['date'] ?: date('Y-m-d H:i');
     $tags = $_POST['tags'] ?? '';
-    $content = $_POST['content'] ?? '';
+    // AUCH HIER: Inhalt von Formularen säubern
+    $content = stripslashes($_POST['content'] ?? '');
 
-    // Frontmatter generieren
+    // Frontmatter generieren — JETZT KOMPLETT REIN UND OHNE QUOTES!
     $fileContent = "---\n";
-    $fileContent .= "title: \"" . str_replace('"', '\\"', $title) . "\"\n";
+    $fileContent .= "title: " . $title . "\n"; // Keine künstlichen Anführungszeichen mehr!
     $fileContent .= "date: $date\n";
     if (!empty($tags)) {
         $fileContent .= "tags:\n";

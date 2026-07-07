@@ -34,8 +34,6 @@ require 'inc/header.php';
 </div>
 
 <div class="counter">
-
-<div class="counter">
     <span class="label">$ ls -la posts/</span> 
     <?php foreach ($posts as $post): ?>
         <?php
