@@ -11,10 +11,12 @@ use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use League\CommonMark\MarkdownConverter;
 
 /**
+ * Wurstgesicht des Todes
  * Lädt alle Posts aus dem posts/-Verzeichnis
  * und sortiert sie nach dem Datum aus dem Frontmatter (neueste zuerst).
  * Fallback: falls kein Datum im Frontmatter, wird filemtime verwendet.
  */
+
 function getPosts(): array {
     $files = glob(__DIR__ . '/../posts/*.md');
     
@@ -22,6 +24,13 @@ function getPosts(): array {
     $posts = [];
     
     foreach ($files as $file) {
+        $filename = basename($file);
+        
+        // NEU: Statische Seiten und Systemdateien aus den Blogposts filtern
+        if (in_array($filename, ['about.md', 'not-found.md'])) {
+            continue; // Überspringt diese Datei, sie wird nicht ins Array aufgenommen
+        }
+
         $content = file_get_contents($file);
         $parsed = parseFrontmatter($content);
         $meta = $parsed['meta'];
