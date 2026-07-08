@@ -1,5 +1,5 @@
 ---
-title: "Flat-File-Admin-Panel für PHP-Blogs"
+title: Flat-File-Admin-Panel für PHP-Blogs
 date: 2026-07-05 16:50
 tags:
   - php

@@ -14,6 +14,5 @@ Deshalb heißt diese Website auch historisch bedingt immer noch *404 - gone* und
 
 Dann habe ich aber so viel Gefallen an der kleinen einzelnen HTML-Datei gefunden, dass ich immer weiter gemacht habe. So habe ich den aktuellen Song, den ich gerade höre, von Last.fm eingebunden. Oder einen ganz simplen Counter. Usw. usf... und irgendwann wurde ein kleines Flat-File CMS daraus, ich habe es **NoCMS** getauft. Denn es ist nur PHP, HTML und ein Ordner `/posts`, in dem Markdown-Dateien liegen. Dann habe ich ein kleines `admin.php` Interface gebaut, damit man Artikel über das Web schreiben und editieren kann, und um Bilder hochladen zu können.
 
-Das war's, und nun stehen wir hier.
-
+Das war's, und nun stehen wir hier.  
 Jan Montag

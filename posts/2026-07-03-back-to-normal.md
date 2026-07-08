@@ -1,5 +1,5 @@
 ---
-title: "Zurück zur Normalität"
+title: Zurück zur Normalität
 date: 2026-07-03 22:14
 tags:
   - test
