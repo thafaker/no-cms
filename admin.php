@@ -1,5 +1,5 @@
 <?php
-// admin.php - kleines Admin INterface für mein NoCMS (C) Jan Montag 2026
+// admin.php - kleines Admin Interface für mein NoCMS (C) Jan Montag 2026
 require_once __DIR__ . '/inc/functions.php';
 
 $postsDir = __DIR__ . '/posts/';
@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 // ==========================================
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
-    // NEU: stripslashes(), um ungewollte Maskierungen vom Formular-Submit direkt zu säubern
     $title = stripslashes($_POST['title']);
     $filenameInput = trim($_POST['filename'] ?? '');
     $isEdit = !empty($_POST['is_edit_mode']);
@@ -94,12 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     
     $date = $_POST['date'] ?: date('Y-m-d H:i');
     $tags = $_POST['tags'] ?? '';
-    // AUCH HIER: Inhalt von Formularen säubern
     $content = stripslashes($_POST['content'] ?? '');
 
-    // Frontmatter generieren — JETZT KOMPLETT REIN UND OHNE QUOTES!
+    // Frontmatter generieren
     $fileContent = "---\n";
-    $fileContent .= "title: " . $title . "\n"; // Keine künstlichen Anführungszeichen mehr!
+    $fileContent .= "title: " . $title . "\n";
     $fileContent .= "date: $date\n";
     if (!empty($tags)) {
         $fileContent .= "tags:\n";
@@ -131,6 +129,7 @@ rsort($existingFiles); // Neueste Dateien nach oben
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal Admin · JanMontag</title>
     <style>
+        /* Standardmäßig: Dark Mode (Terminal klassisch) */
         :root {
             --bg: #0a0a0a;
             --bg-secondary: #1a1a1a;
@@ -140,6 +139,18 @@ rsort($existingFiles); // Neueste Dateien nach oben
             --prompt: #ff5c5c;
             --border: #333;
         }
+
+        /* Light Mode: Klares, helles Entwickler-Theme */
+        :root.light-mode {
+            --bg: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #666;
+            --accent: #059669;
+            --prompt: #dc2626;
+            --border: #ccc;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: var(--bg);
@@ -147,16 +158,40 @@ rsort($existingFiles); // Neueste Dateien nach oben
             font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
             padding: 2rem;
             line-height: 1.5;
+            transition: background 0.2s, color 0.2s;
         }
-        .container { max-width: 850px; margin: 0 auto; }
-        h1 { color: var(--text); margin-bottom: 1.5rem; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .container { max-width: 850px; margin: 0 auto; position: relative; }
+        
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        h1 { color: var(--text); font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
         .status-msg { margin-bottom: 1.5rem; padding: 0.5rem; background: var(--bg-secondary); border-left: 3px solid var(--accent); }
         
         label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.9rem; }
         input[type="text"], textarea, select {
             width: 100%;
             background: var(--bg-secondary);
-            color: #fff;
+            color: var(--text);
             border: 1px solid var(--border);
             padding: 0.6rem;
             margin-bottom: 1.2rem;
@@ -169,10 +204,15 @@ rsort($existingFiles); // Neueste Dateien nach oben
             border-color: var(--accent);
         }
         
+        input[readonly] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .row { display: flex; gap: 1rem; }
         .col { flex: 1; }
         
-        button {
+        button[type="submit"] {
             background: var(--accent);
             color: #000;
             padding: 0.7rem 1.5rem;
@@ -183,7 +223,7 @@ rsort($existingFiles); // Neueste Dateien nach oben
             font-size: 1rem;
             border-radius: 4px;
         }
-        button:hover { opacity: 0.9; }
+        button[type="submit"]:hover { opacity: 0.9; }
         
         .upload-box {
             background: var(--bg-secondary);
@@ -193,15 +233,26 @@ rsort($existingFiles); // Neueste Dateien nach oben
             margin-bottom: 1.5rem;
             border-radius: 4px;
         }
-        .upload-box.dragover { border-color: var(--accent); background: #222; }
+        .upload-box.dragover { border-color: var(--accent); background: var(--bg-secondary); opacity: 0.8; }
         #imageInput { display: none; }
         .upload-label { cursor: pointer; color: var(--accent); text-decoration: underline; }
         #uploadStatus { margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); }
     </style>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="container">
-    <h1>$ vim admin.php</h1>
+    <div class="header-row">
+        <h1>$ vim admin.php</h1>
+        <button type="button" class="theme-toggle" id="themeToggle">[ ☀️ Light ]</button>
+    </div>
     
     <?php if (!empty($message)) echo '<div class="status-msg">' . $message . '</div>'; ?>
 
@@ -265,17 +316,41 @@ const formTags = document.getElementById('formTags');
 const submitBtn = document.getElementById('submitBtn');
 
 // ==========================================
+// THEME SWITCHER HANDLER
+// ==========================================
+const themeToggle = document.getElementById('themeToggle');
+
+function updateToggleButton() {
+    if (document.documentElement.classList.contains('light-mode')) {
+        themeToggle.textContent = '[ 🌙 Dark ]';
+    } else {
+        themeToggle.textContent = '[ ☀️ Light ]';
+    }
+}
+
+updateToggleButton();
+
+themeToggle.addEventListener('click', () => {
+    document.documentElement.classList.toggle('light-mode');
+    if (document.documentElement.classList.contains('light-mode')) {
+        localStorage.setItem('theme', 'light');
+    } else {
+        localStorage.setItem('theme', 'dark');
+    }
+    updateToggleButton();
+});
+
+// ==========================================
 // BEITRAGS-LOADER (EDITIEREN VIA SELECT)
 // ==========================================
 postSelector.addEventListener('change', function() {
     const selectedFile = this.value;
-    const isEditMode = document.getElementById('isEditMode'); // Neu
+    const isEditMode = document.getElementById('isEditMode');
     
     if (!selectedFile) {
-        // Formular zurücksetzen für neuen Beitrag
         formFilename.value = '';
         formFilename.removeAttribute('readonly');
-        isEditMode.value = "0"; // Neu: Edit-Modus aus
+        isEditMode.value = "0";
         formTitle.value = '';
         formDate.value = '';
         formTags.value = '';
@@ -292,7 +367,7 @@ postSelector.addEventListener('change', function() {
             if (data.success) {
                 formFilename.value = data.filename;
                 formFilename.setAttribute('readonly', 'true');
-                isEditMode.value = "1"; // Neu: Edit-Modus an!
+                isEditMode.value = "1";
                 formTitle.value = data.title;
                 formDate.value = data.date;
                 formTags.value = data.tags;
@@ -352,6 +427,7 @@ function uploadFile(file) {
     });
 }
 
+// Cursor Insertion Utility
 function insertAtCursor(textarea, text) {
     const startPos = textarea.selectionStart;
     const endPos = textarea.selectionEnd;
