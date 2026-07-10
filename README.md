@@ -36,6 +36,7 @@ dev.janmontag.de {
     }
     rewrite @clean_urls /post.php?slug={path}
 }
+```
 
 ---
 
@@ -64,3 +65,4 @@ git commit -m "Feat: Add minimal Pure theme, fix mobile layouts, integrate Last.
 
 # 7. Pushe den neuen Branch hoch zu GitHub
 git push origin theme-pure
+```
