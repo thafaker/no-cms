@@ -1,30 +1,50 @@
 <?php
-// IT HAPPENDE IN NOVEMBER (C) Jan Montag 2026
+// sitemap.php of NoCMS Jan Montag 2026
 require_once 'inc/functions.php';
 
-header('Content-Type: application/xml; charset=utf-8');
-echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+// Setze den korrekten Content-Type, damit Browser und Suchmaschinen sie als XML erkennen
+header("Content-Type: application/xml; charset=utf-8");
 
-$posts = getPosts();
-$baseUrl = 'https://janmontag.de';
+// Deine Domain (passe sie ggf. an, falls du das Protokoll erzwingen willst)
+$baseUrl = "https://janmontag.de"; 
+if (strpos($_SERVER['HTTP_HOST'], 'dev.') === 0) {
+    $baseUrl = "https://dev.janmontag.de";
+}
+
+// Alle Blogposts über deine native NoCMS-Funktion laden
+$allPosts = getPosts();
+
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <!-- Startseite | No Nazis -->
+    
     <url>
         <loc><?= $baseUrl ?>/</loc>
-        <lastmod><?= date('Y-m-d') ?></lastmod>
+        <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
 
-    <!-- Alle Posts -->
-    <?php foreach ($posts as $post): 
-        $name = basename($post);
-        $date = date('Y-m-d', filemtime($post));
+    <url>
+        <loc><?= $baseUrl ?>/archive.php</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <?php foreach ($allPosts as $postPath): 
+        $filename = basename($postPath);
+        
+        // Exakt dieselbe Logik wie in der index.php: Datum und Endung entfernen
+        $slug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
+        
+        // Letztes Änderungsdatum der Datei für <lastmod> ermitteln
+        $lastMod = date('Y-m-d', filemtime($postPath));
     ?>
     <url>
-        <loc><?= $baseUrl ?>/post.php?file=<?= urlencode($name) ?></loc>
-        <lastmod><?= $date ?></lastmod>
+        <loc><?= $baseUrl ?>/<?= urlencode($slug) ?></loc>
+        <lastmod><?= $lastMod ?></lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <?php endforeach; ?>
+
 </urlset>

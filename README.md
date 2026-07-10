@@ -1,51 +1,66 @@
-# NoCMS – Kleines Weblog ohne Datenbank in PHP
+# NoCMS — Minimal Flat-File Blog Engine
 
-**NoCMS** ist ein minimalistisches, flat-file-basiertes Weblog-System.  
-Keine Datenbank. Markdown Dateien.
+NoCMS ist ein radikal minimalistisches, datenbankloses Content-Management-System in nativem PHP. Entwickelt für maximale Performance, absolute Portabilität und puren Fokus auf den Text.
 
-## 📦 Alles was drin ist
+![NoCMS Pure Theme](./worscht.jpg) <!-- Ersetze dies später durch deinen neuen Screenshot-Pfad, z.B. ./screenshot.png -->
 
-- **Markdown** – weil es sich anbietet.
-- **Frontmatter** – Titel, Datum, Tags
-- **Automatische Sitemap & RSS-Feed**
-- **Last.fm-Integration** – zeigt den aktuellen Song
-- **Besucherzähler** – ohne Tracking
-- **Syntax Highlighting** – für Codebeispiele
-- **Admin Interface**  - Neuen Beitrag erstellen, alte bearbeiten
+## Features
 
-## 🛠️ Installation
+- **Flat-File-Architektur:** Beiträge werden komplett als Markdown-Dateien mit YAML-Frontmatter gespeichert. Keine Datenbank benötigt.
+- **Pure-Theme:** Ein von Denis-Moulin inspiriertes, tiefschwarzes (AMOLED-friendly) Design mit gestapelten Listen und feinen Monospace-Akzenten.
+- **Asynchrones Admin-Panel:** Native `admin.php` mit Drag-and-Drop/AJAX-Bildupload direkt in den Markdown-Editor ohne Page-Reload.
+- **Dynamische Feeds:** Automatische Generierung von valider `sitemap.xml` und `feed.xml` (RSS).
+- **Pretty URLs:** Sauberes URL-Routing nativ über den Caddy-Webserver.
+- **Last.fm-Integration:** Asynchrones Live-Widget oben rechts, das deinen aktuellen Soundtrack direkt von Last.fm streamt.
 
-```bash
-git clone https://github.com/thafaker/no-cms.git
-cd no-cms
-composer install
+## Setup & Caddy-Konfiguration
 
-```
+Für die schönen URLs und die Absicherung des Admin-Panels wird folgende Konfiguration im `Caddyfile` genutzt:
+
+```caddy
+dev.janmontag.de {
+    root * /var/www/dev.janmontag.de
+    
+    # Passwortschutz für das Admin-Interface
+    basicauth /admin.php {
+        thafaker <dein_passwort_hash>
+    }
+
+    php_fastcgi unix//var/run/php/php8.3-fpm.sock
+    encode zstd gzip
+
+    # Schöne URLs für die Markdown-Beiträge
+    @clean_urls {
+        not file {path} {path}/
+        not path /admin.php /assets* /inc* /posts* /feed.xml /sitemap.xml
+    }
+    rewrite @clean_urls /post.php?slug={path}
+}
 
 ---
 
-### `LICENSE` (MIT)
+### 3. Der Git-Workflow im Terminal
 
-```text
-MIT License
+Logge dich auf deinem Hetzner-Server ein, wechsle in das Verzeichnis und führe die folgenden Befehle aus, um einen neuen Branch zu erstellen, den Screenshot hinzuzufügen und alles sauber zu pushen:
 
-Copyright (c) 2026 Jan Montag
+```bash
+# 1. Wechsle in dein Entwicklungs-Verzeichnis
+cd /var/www/dev.janmontag.de
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+# 2. Erstelle einen neuen Branch für das Design (z.B. "theme-pure") und wechsle dorthin
+git checkout -b theme-pure
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+# 3. Kopiere deinen Screenshot in das Verzeichnis (falls noch nicht geschehen)
+# Speicher ihn am besten direkt als "screenshot.png" im Hauptverzeichnis ab.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+# 4. Überprüfe, welche Dateien geändert wurden
+git status
+
+# 5. Füge alle Änderungen (Caddyfile, index.php, style.css, lastfm.php, README.md, Screenshot) hinzu
+git add .
+
+# 6. Erstelle einen sauberen Commit
+git commit -m "Feat: Add minimal Pure theme, fix mobile layouts, integrate Last.fm and update README"
+
+# 7. Pushe den neuen Branch hoch zu GitHub
+git push origin theme-pure

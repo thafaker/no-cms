@@ -8,8 +8,6 @@ tags:
   - flatfile
 ---
 
-# Flat-File-Admin-Panel für PHP-Blogs
-
 Klassische Content-Management-Systeme (CMS) setzen meist auf eine relationale Datenbank (wie MySQL oder PostgreSQL), um Inhalte, Metadaten und Konfigurationen strukturiert zu speichern. Für minimalistische, textbasierte Weblogs ist dieser Overhead jedoch oft nicht notwendig. Ein Flat-File-Setup, bei dem Beiträge direkt als Plain-Text-Dateien (z. B. im Markdown-Format mit YAML-Frontmatter) auf dem Server liegen, bietet signifikante Vorteile bei der Performance, Portabilität und Versionierung.
 
 Der Nachteil reiner Flat-File-Systeme liegt meist im Workflow: Das Verfassen von Beiträgen erfordert ohne grafische Oberfläche zwingend den Zugriff via SSH, SFTP oder Git. Um diesen Prozess zu vereinfachen, lässt sich eine maßgeschneiderte, schlanke Administrationsoberfläche in einer einzigen PHP-Datei realisieren, die direkt auf das bestehende Dateisystem aufsetzt.

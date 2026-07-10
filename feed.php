@@ -8,7 +8,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 $posts = getPosts();
 $posts = array_slice($posts, 0, 20); // nur die 20 neuesten
 
+// Dynamische Domain-Erkennung für die URLs im Feed
 $baseUrl = 'https://janmontag.de';
+if (strpos($_SERVER['HTTP_HOST'], 'dev.') === 0) {
+    $baseUrl = 'https://dev.janmontag.de';
+}
+
 $now = date('r');
 ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -26,20 +31,29 @@ $now = date('r');
         $meta = $parsed['meta'];
         $body = $parsed['content'];
 
-        $title = $meta['title'] ?? basename($post);
-        $date = $meta['date'] ?? date('r', filemtime($post));
-        $link = $baseUrl . '/post.php?file=' . urlencode(basename($post));
+        $filename = basename($post);
         
-        // Zusammenfassung: ersten 500 Zeichen
+        // Exakt dieselbe Pretty-URL Logik: Datum (YYYY-MM-DD-) und .md abschneiden
+        $slug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
+
+        $title = $meta['title'] ?? str_replace('-', ' ', $slug);
+        
+        // Formatiere das Datum für den RSS-Standard (RFC 2822)
+        $date = isset($meta['date']) ? date('r', strtotime($meta['date'])) : date('r', filemtime($post));
+        
+        // Die neue, saubere URL ohne post.php und Parameter
+        $link = $baseUrl . '/' . urlencode($slug);
+        
+        // Zusammenfassung: ersten 500 Zeichen sauber extrahieren
         $description = strip_tags($body);
-        $description = substr($description, 0, 500) . '…';
+        $description = mb_substr($description, 0, 500, 'UTF-8') . '…';
     ?>
     <item>
         <title><?= htmlspecialchars($title) ?></title>
         <link><?= $link ?></link>
         <guid><?= $link ?></guid>
-        <pubDate><?= date('r', strtotime($date)) ?></pubDate>
-        <description><![CDATA[<?= $description ?>]]></description>
+        <pubDate><?= $date ?></pubDate>
+        <description><?= htmlspecialchars($description) ?></description>
     </item>
     <?php endforeach; ?>
 </channel>

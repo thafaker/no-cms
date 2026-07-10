@@ -1,312 +1,338 @@
-/* ===========================================
-   NO-CMS · Terminal Theme (Dark / Light)
-   =========================================== */
+/* style.css — NoCMS Theme 2026 */
 
-/* reset – alles auf Anfang */
-* {
-    margin: 0;
-    padding: 0;
+/* GLOBAL RESET & TYPOGRAFIE */
+*, *:before, *:after {
     box-sizing: border-box;
 }
 
-/* ─── CSS-Variablen (Standard: Dark Mode) ─── */
-:root {
-    --bg: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --text: #e6e6e6;
-    --text-secondary: #ddd;
-    --text-muted: #999;
-    --text-dim: #888;
-    --border: #333;
-    --accent: #6ee7b7;      /* Terminal-Grün */
-    --link: #7dd3fc;        /* Link-Blau */
-    --prompt: #ff5c5c;      /* Prompt-Rot */
-    --scrollbar-bg: #1e1e1e;
-    --scrollbar-thumb: #444;
-    --code-bg: #111;
-    --blockquote-border: #444;
-}
-
-/* ─── DEIN RETRO-LIGHT-MODE (per JS-Attribut gesteuert) ─── */
-html[data-theme="light"] {
-    --bg: #f5f5f0;          /* Dein augenschonendes Paper-White */
-    --bg-secondary: #e8e8e3;/* Passender, leicht abgesetzter Ton für Codeblöcke */
-    --text: #1a1a1a;        /* Dunkler Haupttext */
-    --text-secondary: #222;
-    --text-muted: #555;
-    --text-dim: #666;
-    --border: #ccc;
-    --accent: #2d8f6b;      /* Dein satteres Grün für hellen Grund */
-    --link: #0066cc;        /* Dein klassisches Terminal-Link-Blau */
-    --prompt: #cc3333;      /* Dein dezentes Signalrot */
-    --scrollbar-bg: #d0d0d0;
-    --scrollbar-thumb: #999;
-    --code-bg: #e8e8e3;
-    --blockquote-border: #aaa;
-}
-
-/* ─── Automatische Erkennung bei System-Lightmode (Fallback) ─── */
-@media (prefers-color-scheme: light) {
-    html:not([data-theme="dark"]) {
-        --bg: #f5f5f0;
-        --bg-secondary: #e8e8e3;
-        --text: #1a1a1a;
-        --text-secondary: #222;
-        --text-muted: #555;
-        --text-dim: #666;
-        --border: #ccc;
-        --accent: #2d8f6b;
-        --link: #0066cc;
-        --prompt: #cc3333;
-        --scrollbar-bg: #d0d0d0;
-        --scrollbar-thumb: #999;
-        --code-bg: #e8e8e3;
-        --blockquote-border: #aaa;
-    }
+* {
+    margin: 0;
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 400;
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 2rem;
-    transition: background 0.2s ease, color 0.2s ease;
+    font: 1.1rem 'Inter', system-ui, -apple-system, sans-serif;
+    color: rgba(255, 255, 255, 0.85); /* Exzellent lesbares, leicht gedimmtes Weiß */
+    background: #050505; /* Das typische tiefe Schwarz */
+    line-height: 1.7;
+    letter-spacing: -0.01em;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
 }
 
-.content {
-    max-width: 640px;
-    width: 100%;
+h1, h2, h3, h4 {
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: -0.02em; /* Macht Inter-Überschriften extrem knackig */
 }
 
-/* ===== MONOSPACE FÜR ALLE TEXTLASTIGEN ELEMENTE ===== */
-.status,
-.meta,
-.article,
-.command,
-.nowplaying,
-.counter,
-.postline,
-.footer {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
-}
-
-/* ===== Statuszeile ===== */
-.status {
-    font-size: 1.2rem;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-    border: none;
-}
-
-/* Hover-Effekt für den Toggle-Button */
-#themeToggle {
-    color: var(--text-muted);
-    transition: color 0.1s ease;
-}
-#themeToggle:hover {
-    color: var(--accent);
-}
-
-/* ===== Command‑Wrapper (nur index) ===== */
-.command-wrapper {
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 1rem;
-}
-
-.command {
-    font-size: 2rem;
-    font-weight: 450;
-    color: var(--text-secondary);
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.prompt {
-    color: var(--prompt);
-    user-select: none;
-    animation: blink 1s steps(1, end) infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
-}
-
-/* ===== Nowplaying / Counter ===== */
-.nowplaying,
-.counter {
-    margin-top: 2rem;
-    font-size: 1rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-.label {
-    color: var(--accent);
-}
-
-#track,
-#counter {
-    display: inline-block;
-    margin-top: .4rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
-
-/* ===== Post‑Liste ===== */
-.postline {
-    color: var(--text-dim);
-    margin: .2rem 0;
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-.postline a {
-    color: var(--text-secondary);
+a:link, a:visited, a:hover {
+    color: inherit;
     text-decoration: none;
 }
 
-.postline a:hover {
-    color: var(--link);
-    text-decoration: underline;
+/* ==========================================================================
+   LAYOUT 1: STARTSEITE (Zentrierter Denis-Moulin-Look)
+   ========================================================================== */
+body.layout-index main {
+    min-height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-/* ===== Footer ===== */
-.footer {
-    margin-top: 4rem;
-    color: var(--text-dim);
+body.layout-index section {
+    width: 100%;
+    max-width: 30rem;
+}
+
+body.layout-index i {
+    display: inline-block;
+    font-style: normal;
+    margin: 2rem 0rem;
+    color: #fff;
+}
+
+body.layout-index ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    transition: all ease-out .3s;
+}
+
+body.layout-index li {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    opacity: .3;
+    transition: all ease-out .3s;
+}
+
+body.layout-index ul:hover li:hover {
+    opacity: 1;
+    transition: all ease-out .6s;
+}
+
+body.layout-index li a.title {
+    flex-shrink: 0;
+    overflow: visible;
+    border-bottom: none;
+}
+
+body.layout-index .dotted-line {
+    flex-grow: 1;
+    height: 1px;
+    border-bottom: 1px dotted rgba(255, 255, 255, .2);
+}
+
+body.layout-index li a.desc {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom: .5px solid rgba(255, 255, 255, .3);
+}
+
+body.layout-index .archive-link {
+    display: inline-block;
+    margin-top: 1.5rem;
     font-size: 0.9rem;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    border-bottom: .5px solid rgba(255, 255, 255, .3);
 }
 
-/* ===== Artikel‑Styles (nur post) ===== */
-.article {
-    color: var(--text-secondary);
-    line-height: 1.8;
+body.layout-index .archive-link:hover {
+    opacity: 1;
+}
+
+@media (max-width: 480px) {
+    body.layout-index li a.desc { display: none; }
+    body.layout-index .dotted-line { order: 1; }
+    body.layout-index li a.title { order: 2; flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; border-bottom: .5px solid rgba(255, 255, 255, .3); }
+}
+
+/* ==========================================================================
+   LAYOUT 2: ARTIKELSEITE (Fokussiertes Lese-Layout)
+   ========================================================================== */
+body.layout-post main {
+    min-height: 100vh;
+    padding: 6rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body.layout-post article {
+    width: 100%;
+    max-width: 32rem; /* Perfekte Zeilenbreite für ergonomisches Lesen */
+}
+
+body.layout-post .back-nav {
+    margin-bottom: 4rem;
+    width: 100%;
+}
+
+body.layout-post .back-link {
+    font-size: 0.9rem;
+    opacity: 0.4;
+    border-bottom: none !important;
+}
+
+body.layout-post .back-link:hover {
+    opacity: 1;
+}
+
+body.layout-post h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 2.5rem;
+}
+
+body.layout-post h2, body.layout-post h3 {
     font-size: 1.15rem;
-}
-    .article img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 1.5rem auto; /* Optional: Zentriert das Bild und gibt ihm etwas Abstand */
-}
-
-.article h1,
-.article h2,
-.article h3 {
-    color: var(--text);
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     margin-bottom: 1rem;
 }
 
-.article p {
-    margin: 1rem 0;
+body.layout-post p {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
-.article ul,
-.article ol {
-    margin: 1rem 0 1rem 2rem;
+/* Hauchdünne Unterstreichung für Links im Fließtext */
+body.layout-post .entry-content a {
+    border-bottom: .5px solid rgba(255, 255, 255, 0.4);
 }
 
-.article code {
-    background: var(--code-bg);
-    padding: .15rem .35rem;
-    border-radius: 3px;
+body.layout-post .entry-content a:hover {
+    border-bottom-color: rgba(255, 255, 255, 1);
 }
 
-.article pre {
-    background: var(--bg-secondary);
-    padding: 1rem;
-    overflow: auto;
-    margin: 1.5rem 0;
-    border: 1px solid var(--border);
+body.layout-post ul, body.layout-post ol {
+    padding-left: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
-.article blockquote {
-    border-left: 3px solid var(--blockquote-border);
-    padding-left: 1rem;
-    color: var(--text-muted);
-    margin: 1rem 0;
+body.layout-post li {
+    margin-bottom: 0.5rem;
 }
 
-.article table {
-    border-collapse: collapse;
-    margin: 1.5rem 0;
+body.layout-post img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 2.5rem 0 0.5rem 0;
+    border-radius: 4px;
 }
 
-.article th,
-.article td {
-    border: 1px solid var(--border);
-    padding: .5rem;
+body.layout-post small {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    margin-bottom: 2.5rem;
 }
 
-.article hr {
-    border: 0;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
-}
-
-.article .footnotes {
-    margin-top: 3rem;
-    font-size: .9rem;
-    color: var(--text-muted);
-}
-
-/* ===== Meta (nur post) ===== */
-.meta {
-    color: var(--text-muted);
-    margin: 1rem 0 2rem;
-    line-height: 1.6;
-    white-space: nowrap;
+/* Prism.js Code-Blöcke */
+body.layout-post pre {
+    background: #111 !important;
+    padding: 1.25rem !important;
+    border-radius: 6px;
     overflow-x: auto;
+    margin: 2rem 0;
+    border: 1px solid #222;
 }
 
-.meta .key {
-    color: var(--accent);
+body.layout-post code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace !important;
+    font-size: 0.85rem !important;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    color: #fff;
 }
 
-a {
-    color: var(--link);
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 680px) {
-    body {
-        padding: 1.5rem;
-    }
-    .command {
-        font-size: 1.4rem;
-    }
-    .status {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-    }
-}
-
-/* ===== Scrollbar ===== */
-.command-wrapper::-webkit-scrollbar {
-    height: 5px;
-    background: var(--scrollbar-bg);
-}
-.command-wrapper::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
+body.layout-post pre code {
+    background: transparent !important;
+    padding: 0 !important;
     border-radius: 0;
 }
 
-/* Bilder entsprchend resizen */
-.article img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 1.5rem auto; /* Optional: Zentriert das Bild und gibt ihm etwas Abstand */
+/* ==========================================================================
+   GLOBAL FOOTER (Unscheinbar & Mittig ganz unten)
+   ========================================================================== */
+.site-footer {
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem; /* Schön dezent und klein */
+    color: rgba(255, 255, 255, 0.25); /* Der unaufdringliche Grauton */
+    line-height: 1.6;
+    padding: 6rem 0 2rem 0; /* Großzügiger Abstand nach oben, um sich vom Inhalt zu trennen */
+    clear: both;
+}
+
+.site-footer a {
+    color: rgba(255, 255, 255, 0.4);
+    border-bottom: .5px solid rgba(255, 255, 255, 0.15);
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.site-footer a:hover {
+    color: #fff;
+    border-bottom-color: rgba(255, 255, 255, 1);
+}
+
+.site-footer .footer-nav {
+    margin-top: 0.4rem;
+}
+
+/* Der Counter im Monospace-Look für Zahlen */
+.site-footer .footer-counter {
+    margin-top: 1.5rem;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   LAST.FM WIDGET (Schwebend oben rechts, nur Index)
+   ========================================================================== */
+.lastfm-widget {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 0.75rem;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    color: rgba(255, 255, 255, 0.25); /* Perfekt abgestimmtes, dezentes NoCMS-Grau */
+    max-width: 20rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 100;
+    letter-spacing: -0.01em;
+}
+
+.lastfm-widget .now-playing-icon {
+    display: inline-block;
+    margin-right: 0.2rem;
+    color: #fff; /* Puristisches Weiß für die Note */
+}
+
+@media (max-width: 768px) {
+    /* Last.fm Widget zentrieren */
+    .lastfm-widget {
+        position: relative;
+        top: auto;
+        right: auto;
+        text-align: center;
+        margin: 0 auto 2rem auto;
+        max-width: 100%;
+        padding: 0 1rem;
+        white-space: normal;
+    }
+
+    /* Das Listen-Layout für Mobile fixen */
+    body.layout-index ul li {
+        flex-direction: column; /* Stapelt die Elemente untereinander */
+        align-items: flex-start; /* Richtet alles strikt linksbündig aus */
+        gap: 0.15rem; /* Minimaler Abstand zwischen Titel und Info */
+        margin-bottom: 1.2rem; /* Angenehmer Leseabstand zum nächsten Block */
+    }
+
+    /* Die gepunktete Linie auf dem Handy komplett weg */
+    body.layout-index ul li .dotted-line {
+        display: none !important;
+    }
+
+    /* Reihenfolge umkehren: Titel/Hauptlink steht immer oben */
+    body.layout-index ul li a.title {
+        order: 1; /* Zwingt den Hauptlink in die erste Zeile */
+        font-size: 1rem;
+        border-bottom: .5px solid rgba(255, 255, 255, .3); /* Feiner Unterstrich für Mobile-Taps */
+        width: auto;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+    }
+
+    /* Die Beschreibung oder das Datum wandert dezent darunter */
+    body.layout-index ul li a.desc,
+    body.layout-index ul li span:not(.dotted-line) {
+        order: 2; /* Wandert unter den Titel */
+        text-align: left;
+        opacity: 0.4;
+        font-size: 0.8rem;
+        padding-left: 0;
+        border-bottom: none !important; /* Kein störender Unterstrich für die Zusatzinfo */
+    }
 }

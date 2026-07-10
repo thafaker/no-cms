@@ -1,66 +1,94 @@
 <?php
 // index.php of NoCMS Jan Montag 2026
-// The sore in my soul
-// The mark in my heart
-// Her acid reign
 require_once 'inc/functions.php';
 
-//$posts = getPosts();
-// zeige nicht mehr als 5 Beiträge auf der Startseite
-$posts = array_slice(getPosts(), 0, 5);
+// Holt alle Markdown-Dateien aus deinem posts/-Verzeichnis
+$allPosts = getPosts();
 
-$pageTitle = '404 · JanMontag.de';
-require 'inc/header.php';
+// Wir holen uns einfach die 5 neuesten Posts für die Startseite
+$latestPosts = array_slice($allPosts, 0, 3);
+
+// Variablen für die inc/header.php vorbereiten
+$pageTitle = "Jan Montag";
+$bodyClass = "layout-index";
+require_once 'inc/header.php';
 ?>
-<!-- lost and dumbfunded -->
-<div class="status" style="display: flex; justify-content: space-between; align-items: center;">
-    <span>404 — Gone</span>
-    <span id="themeToggle" style="cursor: pointer; font-size: 0.9rem; text-transform: none; letter-spacing: normal;">$ theme --toggle</span>
-</div>
-<div class="command-wrapper">
-    <div class="command">
-        <span class="prompt">$</span> rm -rf /
-    </div>
-</div>
-
-<div class="nowplaying" id="nowplaying">
-    <span class="label">$ nowplaying</span><br>
-    <span id="track">lade…</span>
-</div>
-
-<div class="counter">
-    <span class="label">$ wc -l visitors.log</span><br>
-    <span id="counter">...</span>
-</div>
-
-<div class="counter">
-    <span class="label">$ ls -la posts/</span> 
-    <?php foreach ($posts as $post): ?>
-        <?php
-        $name = basename($post);
-        $date = date("M d H:i", filemtime($post));
-        $size = filesize($post);
-        ?>
-        <div class="postline">
-            -rw-r--r-- <?= $size ?> <?= $date ?>
-            <a href="post.php?file=<?= urlencode($name) ?>">
-                <?= htmlspecialchars($name) ?>
-            </a>
+    <main>
+        <div id="lastfm-box" class="lastfm-widget" style="display: none;">
+            <span class="now-playing-icon">♫</span> <span id="lastfm-track">Lade Musik...</span>
         </div>
-    <?php endforeach; ?>
 
-    <div class="nowplaying" id="nowplaying">
-       <span class="label">$
-		<a href="archive.php" style="font-weight: bold;">ls -la archive/</a>
-       </span>
-    </div>
-</div>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/lastfm.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.artist && data.title) {
+                        const widget = document.getElementById('lastfm-box');
+                        const trackSpan = document.getElementById('lastfm-track');
+                        
+                        let text = `${data.artist} — ${data.title}`;
+                        
+                        if (data.nowplaying) {
+                            widget.querySelector('.now-playing-icon').style.opacity = "1";
+                        } else {
+                            widget.querySelector('.now-playing-icon').style.opacity = "0.5";
+                            text += " (zuletzt gehört)";
+                        }
+                        
+                        trackSpan.textContent = text;
+                        widget.style.display = 'block';
+                    }
+                })
+                .catch(err => console.log("Last.fm konnte nicht geladen werden."));
+        });
+        </script>
 
-<!-- Footer (bleibt innerhalb von .content sonst kaputt mit die CSS) -->
-<?php include "footer.php"; ?>
+        <section>
+            <i>Writing</i>
+            <ul>
+                <?php if (!empty($latestPosts)): ?>
+                    <?php foreach ($latestPosts as $postPath): 
+                        $content = file_get_contents($postPath);
+                        $parsed = parseFrontmatter($content);
+                        $meta = $parsed['meta'];
+                        $filename = basename($postPath);
+                        
+                        // Generiere den schönen Slug (Entfernt YYYY-MM-DD- und .md)
+                        $slug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
+                        $title = $meta['title'] ?? $slug;
+                        $desc = $meta['description'] ?? date("d. M Y", isset($meta['date']) ? strtotime($meta['date']) : filemtime($postPath));
+                    ?>
+                        <li>
+                            <a class="title" href="/<?= urlencode($slug) ?>"><?= htmlspecialchars($title) ?></a>
+                            <span class="dotted-line"></span>
+                            <a class="desc" href="/<?= urlencode($slug) ?>"><?= htmlspecialchars($desc) ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>Keine Beiträge vorhanden.</li>
+                <?php endif; ?>
+            </ul>
+            <a class="archive-link" href="/archive.php">Zum Archiv &rarr;</a>
+        </section>
 
-<script src="/assets/script.js" defer></script>
-<script defer src="https://umami.wochenstart.com/script.js" data-website-id="5e4aceef-d428-4ef3-958d-df37654a6d59"></script>
+        <section style="margin-top: 1rem;">
+            <i>Other</i>
+            <ul>
+                <li>
+                    <a class="title" href="https://github.com/thafaker/no-cms" target="_blank" rel="noopener">NoCMS Source</a>
+                    <span class="dotted-line"></span>
+                    <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">GitHub Repo</span>
+                </li>
+                <li>
+                    <a class="title" href="/about">Über mich</a>
+                    <span class="dotted-line"></span>
+                    <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">Info</span>
+                </li>
+            </ul>
+        </section>
 
+        <?php include 'footer.php'; ?>
+    </main>
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?php
-// Dies ist ien ganz einfacher Counter der bei Aufruf einfach um eins inkrementiert. 
+// Dies ist ein ganz einfacher Counter der bei Aufruf einfach um eins inkrementiert. 
 // Kein Tracking. Kein Schwindel. Einfach nur echte Gefühle.
-header('Content-Type: application/json');
 
 $file = __DIR__ . '/counter.txt';
 
@@ -9,9 +8,15 @@ $file = __DIR__ . '/counter.txt';
 $fp = @fopen($file, 'c+');
 
 if (!$fp) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Datei konnte nicht geöffnet werden']);
-    exit;
+    if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+        echo json_encode(['error' => 'Datei konnte nicht geöffnet werden']);
+        exit;
+    } else {
+        echo "0";
+        return;
+    }
 }
 
 // Sperre und Lese/Schreibe
@@ -34,4 +39,12 @@ if (flock($fp, LOCK_EX)) {
 
 fclose($fp);
 
-echo json_encode(['count' => $count]);
+// PRÜFUNG: Wurde die Datei direkt aufgerufen oder per include geladen?
+if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
+    // Direkter Aufruf (z.B. als API) -> Sende echtes JSON
+    header('Content-Type: application/json');
+    echo json_encode(['count' => $count]);
+} else {
+    // Per include im Footer geladen -> Gib nur die reine Zahl für das HTML aus
+    echo number_format($count, 0, ',', '.'); 
+}

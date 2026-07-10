@@ -1,8 +1,13 @@
-<div class="footer">
-    <div>$ uptime</div>
-    <div style="color:#666; margin-top:0.5rem;">
-        © <?= date('Y') ?> Jan Montag <a href="https://github.com/thafaker/no-cms">NoCMS</a> · posts powered by flat files<br />
-        <a href="/feed.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/post.php?file=about.md">about</a>
+<footer class="site-footer">
+    <div class="footer-meta">
+        © <?= date('Y') ?> Jan Montag · <a href="https://github.com/thafaker/no-cms">NoCMS</a> · powered by flat files
     </div>
-// Footer of the world - unite!
-</div>
+    <nav class="footer-nav">
+        <a href="/feed.xml">RSS</a> · 
+        <a href="/sitemap.xml">Sitemap</a> · 
+        <a href="/about">about</a>
+    </nav>
+    <div class="footer-counter">
+        <?php include 'counter.php'; ?>
+    </div>
+</footer>
