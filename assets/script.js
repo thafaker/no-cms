@@ -49,14 +49,26 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("themeToggle");
     if (toggleBtn) {
-        toggleBtn.addEventListener("click", function () {
+        // 1. Beim Laden: Gespeichertes Theme auslesen oder Standard (dark) setzen
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        
+        // Button-Emoji initial anpassen
+        toggleBtn.innerHTML = savedTheme === "light" ? "☀️ Mode" : "🌓 Mode";
+
+        // 2. Klick-Event
+        toggleBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            
             const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
             const newTheme = currentTheme === "dark" ? "light" : "dark";
             
-            // Attribut auf html-Tag setzen
+            // Attribut auf html-Tag setzen & im Browser speichern
             document.documentElement.setAttribute("data-theme", newTheme);
-            // Im Browser speichern
             localStorage.setItem("theme", newTheme);
+            
+            // Emoji live wechseln
+            toggleBtn.innerHTML = newTheme === "light" ? "☀️ Mode" : "🌓 Mode";
             
             // Optional: Prism.js Code-Highlighting Theme live austauschen
             const prismLink = document.getElementById("prism-css");

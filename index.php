@@ -2,10 +2,10 @@
 // index.php of NoCMS Jan Montag 2026
 require_once 'inc/functions.php';
 
-// Holt alle Markdown-Dateien aus deinem posts/-Verzeichnis
+// Holt alle Markdown-Dateien aus posts/-Verzeichnis
 $allPosts = getPosts();
 
-// Wir holen uns einfach die 5 neuesten Posts für die Startseite
+// Wir holen 3 neuesten Posts Startseite
 $latestPosts = array_slice($allPosts, 0, 3);
 
 // Variablen für die inc/header.php vorbereiten
@@ -76,12 +76,12 @@ require_once 'inc/header.php';
             <i>Other</i>
             <ul>
                 <li>
-                    <a class="title" href="https://github.com/thafaker/no-cms" target="_blank" rel="noopener">NoCMS Source</a>
+                    <a class="title" href="https://github.com/thafaker" target="_blank" rel="noopener">Projects</a>
                     <span class="dotted-line"></span>
                     <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">GitHub Repo</span>
                 </li>
                 <li>
-                    <a class="title" href="/about">Über mich</a>
+                    <a class="title" href="/about">Über</a>
                     <span class="dotted-line"></span>
                     <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">Info</span>
                 </li>
