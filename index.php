@@ -85,6 +85,11 @@ require_once 'inc/header.php';
                     <span class="dotted-line"></span>
                     <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">Info</span>
                 </li>
+               <li>
+                    <a class="title" href="/links">Links</a>
+                    <span class="dotted-line"></span>
+                    <span style="opacity: 0.4; font-size: 0.9rem; white-space: nowrap;">My Websites</span>
+                </li>
             </ul>
         </section>
 

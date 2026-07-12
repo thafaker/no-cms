@@ -31,3 +31,5 @@ Und das wars.
 **PS**: Ach so, warum ich das überhaupt aufschreibe. Durch die neuen URLs kann es sein, dass auch die RSS-Feed-URLs neu werden und alle Artikel neu sind, obwohl sie das nicht sind. Dies hier ist die Erklärung und vielleicht schreibe ich die alten URLs lieber noch um.
 
 **PPS**: [Stop The Slop](https://loggbok.de/link/2026-07-10-stop-the-slop/)!
+
+**PPPS**: [Webmention Test](https://herrmontag.de/atproto-die-gute-idee-die-dir-trotzdem-wieder-weggenommen-wird/)

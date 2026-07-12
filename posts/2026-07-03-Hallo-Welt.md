@@ -1,10 +1,9 @@
 ---
 title: Hallo Welt - why is everything broken?
 date: 2026-07-03 15:23
-tags: test
+tags:
+  - test
 ---
-
-# Hallo Welt - why is everything broken?
 
 Hallo Welt. Ich habe meinen Server geschrottet, komplett. Kein Halten mehr. Und weil ich dann eine kleine Status-Seite aufsetzen wollte, in der Zwischenzeit, bis das wieder funktioniert, habe ich hier ein kleines Projekt gestartet mit [Parsedown.php](https://parsedown.org) für Markdown-Files im Ordner <code>/posts</code>, ansonsten basiert das hier auf, keine Ahnung, 30 Zeilen PHP oder so. Quasi No-CMS.
 

@@ -250,7 +250,7 @@ rsort($existingFiles); // Neueste Dateien nach oben
 <body>
 <div class="container">
     <div class="header-row">
-        <h1>$ vim admin.php</h1>
+        <h1>$ Jan Montags admin.php</h1>
         <button type="button" class="theme-toggle" id="themeToggle">[ ☀️ Light ]</button>
     </div>
     
