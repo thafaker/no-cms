@@ -6,6 +6,7 @@ $pageTitle = $pageTitle ?? 'NoCMS Project';
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>

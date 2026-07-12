@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    path { fill: #fff; }
+    @media (prefers-color-scheme: light) { path { fill: #000; } }
+    [data-theme="light"] path { fill: #000; }
+  </style>
+  <path d="M22 4L10 28h3L25 4z"/>
+</svg>

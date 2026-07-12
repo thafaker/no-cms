@@ -21,7 +21,7 @@ async function loadTrack() {
     }
 }
 
-// Besucherzähler
+// Besucherzähler inkrementell +1
 async function loadCounter() {
     try {
         const response = await fetch("/counter.php");
