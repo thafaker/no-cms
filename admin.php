@@ -27,18 +27,57 @@ function slugify($text) {
 // A. BILD-UPLOAD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'upload_image') {
     header('Content-Type: application/json');
-    if (!isset($_FILES['image'])) {
+    
+    // 1. Prüfe ob Datei da ist
+    if (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
         echo json_encode(['error' => 'Keine Datei empfangen']);
         exit;
     }
-    $filename = basename($_FILES['image']['name']);
-    if (move_uploaded_file($_FILES['image']['tmp_name'], $imagesDir . $filename)) {
+    
+    // 2. Prüfe auf Upload-Fehler
+    if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        $errors = [
+            UPLOAD_ERR_INI_SIZE => 'Datei ist größer als upload_max_filesize',
+            UPLOAD_ERR_FORM_SIZE => 'Datei ist größer als das Formular erlaubt',
+            UPLOAD_ERR_PARTIAL => 'Datei wurde nur teilweise hochgeladen',
+            UPLOAD_ERR_NO_TMP_DIR => 'Temporärer Ordner fehlt',
+            UPLOAD_ERR_CANT_WRITE => 'Schreiben auf Festplatte fehlgeschlagen',
+            UPLOAD_ERR_EXTENSION => 'PHP-Erweiterung hat Upload gestoppt'
+        ];
+        $errorMsg = $errors[$_FILES['image']['error']] ?? 'Unbekannter Fehler';
+        echo json_encode(['error' => 'Upload-Fehler: ' . $errorMsg]);
+        exit;
+    }
+    
+    // 3. Sicheren Dateinamen generieren
+    $original = basename($_FILES['image']['name']);
+    $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+    
+    // Erlaubte Dateitypen
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    if (!in_array($ext, $allowed)) {
+        echo json_encode(['error' => 'Nur erlaubt: ' . implode(', ', $allowed)]);
+        exit;
+    }
+    
+    // Eindeutiger Name
+    $filename = uniqid() . '.' . $ext;
+    $targetPath = $imagesDir . $filename;
+    
+    // 4. Verschieben mit Fehlerprüfung
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
         echo json_encode([
             'success' => true,
             'markdown' => '![Beschreibung](/images/' . $filename . ')'
         ]);
     } else {
-        echo json_encode(['error' => 'Fehler beim Speichern des Bildes']);
+        // 5. Detaillierte Fehleranalyse
+        $error = error_get_last();
+        echo json_encode([
+            'error' => 'Speichern fehlgeschlagen: ' . ($error['message'] ?? 'Unbekannter Fehler'),
+            'target' => $targetPath,
+            'perms' => substr(sprintf('%o', fileperms($imagesDir)), -4)
+        ]);
     }
     exit;
 }
