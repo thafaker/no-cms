@@ -112,6 +112,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
 
     if (file_put_contents($postsDir . $filename, $fileContent) !== false) {
         $message = "<p style='color: var(--accent); font-weight: bold;'>$ [SUCCESS] '$filename' erfolgreich gespeichert!</p>";
+        
+        // ==========================================================================
+        // OUTGOING WEBMENTIONS DIREKT BEIM SPEICHERN BEHANDELN
+        // ==========================================================================
+        if (!str_contains($_SERVER['HTTP_HOST'], 'localhost') && !str_contains($_SERVER['HTTP_HOST'], '127.0.0.1')) {
+            $cleanSlug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
+            $sourceUrl = "https://janmontag.de/" . $cleanSlug;
+            
+            // Markdown kurz über den Compiler jagen, um Links zu extrahieren
+            $converter = createMarkdownConverter();
+            $htmlContent = html_entity_decode($converter->convert($content)->getContent());
+            
+            // Webmentions absenden
+            sendOutgoingWebmentionsFromHtml($htmlContent, $sourceUrl);
+        }
+        // ==========================================================================
+        
         $_POST = []; // Formular leeren
     } else {
         $message = "<p style='color: var(--prompt); font-weight: bold;'>$ [ERROR] Schreiben fehlgeschlagen.</p>";

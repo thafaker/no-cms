@@ -1,3 +1,6 @@
+# don't sync the counter stand
+counter.txt
+
 # Composer
 vendor/
 composer.lock

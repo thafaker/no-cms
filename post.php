@@ -42,24 +42,7 @@ $markdown = $parsed['content'];
 $converter = createMarkdownConverter();
 $htmlContent = html_entity_decode($converter->convert($markdown)->getContent());
 
-$converter = createMarkdownConverter();
-$htmlContent = html_entity_decode($converter->convert($markdown)->getContent());
-
-// ==========================================================================
-// OUTGOING WEBMENTIONS: Links im Text automatisch anpingen
-// ==========================================================================
-$currentUrl = "https://janmontag.de/" . $slug;
-
-// Verhindert lange Ladezeiten beim lokalen Entwickeln
-if (!str_contains($_SERVER['HTTP_HOST'], 'localhost') && !str_contains($_SERVER['HTTP_HOST'], '127.0.0.1')) {
-    sendOutgoingWebmentionsFromHtml($htmlContent, $currentUrl);
-}
-// ==========================================================================
-
-// WEBMENTIONS FÜR DIESEN POST HOLEN (Incoming)
-$webmentions = getWebmentions($currentUrl);
-
-// 5. WEBMENTIONS FÜR DIESEN POST HOLEN
+// 5. WEBMENTIONS FÜR DIESEN POST HOLEN (Incoming)
 $currentUrl = "https://janmontag.de/" . $slug;
 $webmentions = getWebmentions($currentUrl);
 
