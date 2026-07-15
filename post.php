@@ -86,10 +86,39 @@ require_once 'inc/header.php';
                 <?= $htmlContent; ?>
             </div>
 
+            <!-- Feedback-Sektion (E-Mail & Fediverse) -->
+            <div class="feedback-container" style="margin-top: 3rem; padding: 1.2rem; background: var(--bg-secondary); border: 1px dashed var(--border); font-size: 0.85rem; line-height: 1.6; border-radius: 4px;">
+                
+                <!-- 1. E-Mail Feedback -->
+                <div class="email-feedback" style="margin-bottom: 1.2rem;">
+                    <?php 
+                        $email = "kommentare@wochenstart.com";
+                        $subject = "Feedback zu: " . ($meta['title'] ?? str_replace('-', ' ', $slug));
+                        
+                        // Der vordefinierte E-Mail-Inhalt (URL-encoded für den mailto-Link)
+                        $body = "(Anmerkungen:)\n\n---\nBeitrag: " . $currentUrl;
+                        
+                        $mailtoUrl = "mailto:" . $email . "?subject=" . rawurlencode($subject) . "&body=" . rawurlencode($body);
+                    ?>
+                    <p style="margin: 0;">
+                        ✉️ <a href="<?= $mailtoUrl ?>" style="color: var(--accent); font-weight: bold; text-decoration: underline;">Kommentiere per E-Mail</a>.
+                    </p>
+                </div>
+
+                <!-- 2. Dynamisches Fediverse-Feedback -->
+                <?php if (!empty($meta['fediverse_url'])): ?>
+                <div class="fediverse-feedback" style="margin-bottom: 1.2rem;">
+                    <p style="margin: 0;">
+                        💬 <a href="<?= htmlspecialchars($meta['fediverse_url']) ?>" target="_blank" rel="noopener" style="color: var(--accent); font-weight: bold; text-decoration: underline;">Im Fediverse kommentieren</a> (Kopiere einfach die URL dieses Beitrags in das Suchfeld deiner Mastodon/Fediverse-App, um direkt zu antworten).
+                    </p>
+                </div>
+                <?php endif; ?>
+            </div>
+
             <!-- ==========================================================================
                WEBMENTIONS SEKTION
                ========================================================================== -->
-            <section class="webmentions-container" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px dotted var(--line-color); font-size: 0.9rem;">
+            <section class="webmentions-container" style="margin-top: 1rem; padding-top: 2rem; border-top: 1px dotted var(--line-color); font-size: 0.9rem;">
                 
                 <!-- 1. Likes & Reposts (Kompakte Avatare) -->
                 <?php if (!empty($interactions)): ?>
@@ -143,6 +172,11 @@ require_once 'inc/header.php';
                     <?php else: ?>
                         <p style="opacity: 0.5; font-style: italic;">Noch keine Webmentions vorhanden. Schreibe eine Antwort auf deinem Blog oder via Mastodon und verlinke diesen Post!</p>
                     <?php endif; ?>
+                </div>
+
+                    <p style="margin: 1rem 0 0 0; font-size: 0.8rem; opacity: 0.7;">
+                        Folge mir im Fediverse: <a href="https://social.janmontag.de/@janmontag" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">@jan@janmontag.de</a>
+                    </p>
                 </div>
             </section>
         </article>

@@ -1,5 +1,6 @@
 <?php
 // admin.php - kleines Admin Interface für mein NoCMS (C) Jan Montag 2026
+// wengstens unterwegs mal n paar Foddos hochladen oder sowas, ge. Ohne SSH.
 require_once __DIR__ . '/inc/functions.php';
 
 $postsDir = __DIR__ . '/posts/';
@@ -153,18 +154,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
         $message = "<p style='color: var(--accent); font-weight: bold;'>$ [SUCCESS] '$filename' erfolgreich gespeichert!</p>";
         
         // ==========================================================================
-        // OUTGOING WEBMENTIONS DIREKT BEIM SPEICHERN BEHANDELN
+        // OUTGOING WEBMENTIONS & FEDIVERSE AUTO-POST
         // ==========================================================================
-        if (!str_contains($_SERVER['HTTP_HOST'], 'localhost') && !str_contains($_SERVER['HTTP_HOST'], '127.0.0.1')) {
-            $cleanSlug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
-            $sourceUrl = "https://janmontag.de/" . $cleanSlug;
-            
-            // Markdown kurz über den Compiler jagen, um Links zu extrahieren
-            $converter = createMarkdownConverter();
-            $htmlContent = html_entity_decode($converter->convert($content)->getContent());
-            
-            // Webmentions absenden
+        $cleanSlug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
+        $sourceUrl = "https://janmontag.de/" . $cleanSlug;
+        
+        // Markdown kurz über den Compiler jagen, um Links zu extrahieren
+        $converter = createMarkdownConverter();
+        $htmlContent = html_entity_decode($converter->convert($content)->getContent());
+        
+        // 1. Webmentions absenden
+        if (function_exists('sendOutgoingWebmentionsFromHtml')) {
             sendOutgoingWebmentionsFromHtml($htmlContent, $sourceUrl);
+        }
+
+        // 2. Automatisch im Fediverse posten (nur bei neuen Beiträgen, nicht bei Edits)
+        if (!$isEdit) {
+            $gtsToken = 'MGUXOTK0MZMTY2I0MI0ZY2U0LTGZMTCTYZNHNMU3NZLLNWJK';
+            
+            // Markdown-Syntax grob entfernen, um lesbaren Text zu bekommen
+            $plainText = preg_replace('/\!\[.*?\]\(.*?\)/', '', $content); // Bilder entfernen
+            $plainText = preg_replace('/\[(.*?)\]\(.*?\)/', '$1', $plainText); // Links säubern
+            $plainText = strip_tags(str_replace(['**', '_', '`'], '', $plainText)); // Formatierungen weg
+            $plainText = trim(preg_replace('/\s+/', ' ', $plainText)); // Überschüssige Spaces/Newlines weg
+            
+            // Auf ca. 300 Zeichen kürzen für den Teaser
+            if (mb_strlen($plainText) > 300) {
+                $plainText = mb_substr($plainText, 0, 300) . '...';
+            }
+            
+            // Den Fediverse-Post zusammenbauen
+            $statusText = "✍️ Neuer Blogpost: " . $title . "\n\n";
+            if (!empty($plainText)) {
+                $statusText .= "» " . $plainText . " «\n\n";
+            }
+            $statusText .= "Weiterlesen: " . $sourceUrl . "\n\n#blog #indieweb";
+
+            // Erstes Bild extrahieren & hochladen
+            $mediaIds = [];
+            
+            // Verbesserter Regex-Match, der den Pfad sauber isoliert
+            if (preg_match('/\!\[.*?\]\((.*?)\)/', $content, $matches)) {
+                $relativeImagePath = parse_url($matches[1], PHP_URL_PATH); // Falls Queries oder Domains drinhängen
+                
+                // Wir säubern den Pfad, sodass er exakt auf das lokale Dateisystem matcht
+                // Ziel ist es, den Namen der Datei aus /images/ extrahieren
+                $imageFilename = basename($relativeImagePath);
+                $absoluteImagePath = $imagesDir . $imageFilename; // Nutzt das oben definierte $imagesDir
+
+                if (!empty($imageFilename) && is_file($absoluteImagePath)) {
+                    // Mime-Type dynamisch ermitteln (wichtig für GoToSocial API)
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $absoluteImagePath);
+                    finfo_close($finfo);
+
+                    $mediaCh = curl_init("https://social.janmontag.de/api/v1/media");
+                    curl_setopt($mediaCh, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($mediaCh, CURLOPT_POST, true);
+                    curl_setopt($mediaCh, CURLOPT_USERAGENT, 'NoCMS-Fediverse-Bot/1.0');
+                    curl_setopt($mediaCh, CURLOPT_HTTPHEADER, [
+                        "Authorization: Bearer " . $gtsToken
+                    ]);
+                    
+                    // CURLFile mit explizitem Mime-Type und Dateinamen füttern
+                    curl_setopt($mediaCh, CURLOPT_POSTFIELDS, [
+                        'file' => new CURLFile($absoluteImagePath, $mimeType, $imageFilename),
+                        'description' => 'Bild zum Beitrag: ' . $title
+                    ]);
+                    
+                    $mediaResponse = curl_exec($mediaCh);
+                    curl_close($mediaCh);
+                    
+                    if ($mediaResponse) {
+                        $mediaData = json_decode($mediaResponse, true);
+                        if (!empty($mediaData['id'])) {
+                            $mediaIds[] = $mediaData['id']; 
+                        } else {
+                            // Falls API-Fehler geworfen wird, temporär im PHP Error-Log vermerken
+                            error_log("GoToSocial Media Upload Fehler: " . $mediaResponse);
+                        }
+                    }
+                } else {
+                    error_log("GoToSocial Bot: Bild-Datei nicht im Dateisystem gefunden: " . $absoluteImagePath);
+                }
+            }
+
+            // Status posten
+            $postData = ['status' => $statusText];
+            if (!empty($mediaIds)) {
+                $postData['media_ids'] = $mediaIds; 
+            }
+
+            $ch = curl_init("https://social.janmontag.de/api/v1/statuses");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+            curl_setopt($ch, CURLOPT_USERAGENT, 'NoCMS-Fediverse-Bot/1.0');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer " . $gtsToken
+            ]);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15); 
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            if ($response) {
+                $responseData = json_decode($response, true);
+                $fediverseUrl = $responseData['url'] ?? ''; 
+                
+                if (!empty($fediverseUrl)) {
+                    $savedContent = file_get_contents($postsDir . $filename);
+                    $updatedFileContent = preg_replace('/^---[\r\n]+/m', "---\nfediverse_url: " . $fediverseUrl . "\n", $savedContent, 1);
+                    if ($updatedFileContent) {
+                        file_put_contents($postsDir . $filename, $updatedFileContent);
+                    }
+                }
+            }
         }
         // ==========================================================================
         
