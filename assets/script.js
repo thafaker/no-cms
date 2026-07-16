@@ -4,20 +4,33 @@
 
 // Last.fm – aktueller Track
 async function loadTrack() {
+    const trackElement = document.getElementById("track") || document.getElementById("lastfm-track");
+    const widgetElement = document.getElementById("lastfm-box");
+    
+    // Wenn das Text-Element auf dieser Seite gar nicht existiert, brechen wir geräuschlos ab
+    if (!trackElement) {
+        return;
+    }
+
     try {
         const response = await fetch("/lastfm.php");
         const data = await response.json();
 
         if (data.error) {
-            document.getElementById("track").textContent = data.error;
+            trackElement.textContent = data.error;
             return;
         }
 
+        // Falls das umschließende Widget-Gefäß da ist, blenden wir es ein
+        if (widgetElement) {
+            widgetElement.style.display = 'block';
+        }
+
         const prefix = data.nowplaying ? "♫ " : "zuletzt: ";
-        document.getElementById("track").textContent =
-            `${prefix}${data.artist} — ${data.title}`;
-    } catch {
-        document.getElementById("track").textContent = "offline";
+        trackElement.textContent = `${prefix}${data.artist} — ${data.title}`;
+        
+    } catch (err) {
+        trackElement.textContent = "offline";
     }
 }
 
