@@ -2,13 +2,9 @@
 // index.php of NoCMS Jan Montag 2026
 require_once 'inc/functions.php';
 
-// Holt alle Markdown-Dateien aus posts/-Verzeichnis
 $allPosts = getPosts();
-
-// Wir holen 3 neuesten Posts Startseite
 $latestPosts = array_slice($allPosts, 0, 3);
 
-// Variablen für die inc/header.php vorbereiten
 $pageTitle = "Jan Montag";
 $bodyClass = "layout-index";
 require_once 'inc/header.php';
@@ -17,32 +13,6 @@ require_once 'inc/header.php';
         <div id="lastfm-box" class="lastfm-widget" style="display: none;">
             <span class="now-playing-icon">♫</span> <span id="lastfm-track">Lade Musik...</span>
         </div>
-
-        <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch('/lastfm.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.artist && data.title) {
-                        const widget = document.getElementById('lastfm-box');
-                        const trackSpan = document.getElementById('lastfm-track');
-                        
-                        let text = `${data.artist} — ${data.title}`;
-                        
-                        if (data.nowplaying) {
-                            widget.querySelector('.now-playing-icon').style.opacity = "1";
-                        } else {
-                            widget.querySelector('.now-playing-icon').style.opacity = "0.5";
-                            text += " (zuletzt gehört)";
-                        }
-                        
-                        trackSpan.textContent = text;
-                        widget.style.display = 'block';
-                    }
-                })
-                .catch(err => console.log("Last.fm konnte nicht geladen werden."));
-        });
-        </script>
 
         <section>
             <i>Writing</i>
@@ -54,7 +24,6 @@ require_once 'inc/header.php';
                         $meta = $parsed['meta'];
                         $filename = basename($postPath);
                         
-                        // Generiere den schönen Slug (Entfernt YYYY-MM-DD- und .md)
                         $slug = preg_replace('/^\d{4}-\d{2}-\d{2}-/', '', str_replace('.md', '', $filename));
                         $title = $meta['title'] ?? $slug;
                         $desc = $meta['description'] ?? date("d. M Y", isset($meta['date']) ? strtotime($meta['date']) : filemtime($postPath));

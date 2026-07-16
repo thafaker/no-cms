@@ -1,7 +1,5 @@
 <?php
 // Functions.php von Jan Montag 2026
-// composer autoloader - hoffentlich klappt das
-// In November
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use League\CommonMark\Environment\Environment;
@@ -10,32 +8,65 @@ use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use League\CommonMark\MarkdownConverter;
 
-/**
- * Wurstgesicht des Todes
- * Lädt alle Posts aus dem posts/-Verzeichnis
- * und sortiert sie nach dem Datum aus dem Frontmatter (neueste zuerst).
- * Fallback: falls kein Datum im Frontmatter, wird filemtime verwendet.
- */
+// Cache-Verzeichnis anlegen
+$cacheDir = __DIR__ . '/../cache/';
+if (!is_dir($cacheDir)) {
+    mkdir($cacheDir, 0775, true);
+}
 
+/**
+ * Hilfsfunktion zum Schreiben/Lesen von schnellem JSON-Cache
+ */
+function getCachedData(string $cacheKey, int $ttlSeconds, callable $fallback) {
+    $cacheFile = __DIR__ . '/../cache/' . md5($cacheKey) . '.json';
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $ttlSeconds) {
+        return json_decode(file_get_contents($cacheFile), true);
+    }
+    $data = $fallback();
+    file_put_contents($cacheFile, json_encode($data));
+    return $data;
+}
+
+/**
+ * Löscht einen spezifischen Cache-Key (Nützlich nach dem Speichern im Admin)
+ */
+function invalidateCache(string $cacheKey) {
+    $cacheFile = __DIR__ . '/../cache/' . md5($cacheKey) . '.json';
+    if (file_exists($cacheFile)) {
+        @unlink($cacheFile);
+    }
+}
+
+/**
+ * Lädt alle Posts aus dem posts/-Verzeichnis.
+ * Nutzt intelligenten Cache: Prüft den mtime des posts-Ordners.
+ */
 function getPosts(): array {
-    $files = glob(__DIR__ . '/../posts/*.md');
+    $postsDir = __DIR__ . '/../posts/';
+    $cacheFile = __DIR__ . '/../cache/posts_cache_index.json';
     
-    // Array für Posts mit Datum
+    $postsDirMtime = file_exists($postsDir) ? filemtime($postsDir) : 0;
+    
+    if (file_exists($cacheFile) && filemtime($cacheFile) >= $postsDirMtime) {
+        $cached = json_decode(file_get_contents($cacheFile), true);
+        if (is_array($cached)) {
+            return $cached;
+        }
+    }
+    
+    $files = glob($postsDir . '*.md');
     $posts = [];
     
     foreach ($files as $file) {
         $filename = basename($file);
-        
-        // NEU: Statische Seiten und Systemdateien aus den Blogposts filtern
         if (in_array($filename, ['links.md', 'about.md', 'not-found.md'])) {
-            continue; // Überspringt diese Datei, sie wird nicht ins Array aufgenommen
+            continue; 
         }
 
         $content = file_get_contents($file);
         $parsed = parseFrontmatter($content);
         $meta = $parsed['meta'];
         
-        // Datum aus Frontmatter oder Fallback auf filemtime
         if (!empty($meta['date'])) {
             $date = strtotime($meta['date']);
         } else {
@@ -48,20 +79,26 @@ function getPosts(): array {
         ];
     }
     
-    // Nach Datum sortieren (neueste zuerst)
     usort($posts, function ($a, $b) {
         return $b['date'] <=> $a['date'];
     });
     
-    // Nur die Dateipfade zurückgeben (für Kompatibilität)
-    return array_column($posts, 'file');
+    $result = array_column($posts, 'file');
+    file_put_contents($cacheFile, json_encode($result));
+    return $result;
 }
 
 /**
  * Parst Frontmatter (YAML-ähnlich) aus dem Markdown-Inhalt.
- * Gibt ein Array zurück: ['meta' => [...], 'content' => '...']
+ * Interner statischer Laufzeitcache, damit mehrfaches Parsen im selben Request gratis ist.
  */
 function parseFrontmatter(string $content): array {
+    static $runtimeCache = [];
+    $hash = md5($content);
+    if (isset($runtimeCache[$hash])) {
+        return $runtimeCache[$hash];
+    }
+
     $meta = [];
     $body = $content;
 
@@ -72,12 +109,10 @@ function parseFrontmatter(string $content): array {
         $currentKey = null;
 
         foreach ($lines as $line) {
-            // Listeneinträge (z.B. tags: - php - css)
             if (preg_match('/^\s*-\s*(.+)$/', $line, $m) && $currentKey) {
                 $meta[$currentKey][] = trim($m[1]);
                 continue;
             }
-            // Schlüssel-Wert-Paare
             if (strpos($line, ':') !== false) {
                 [$key, $value] = explode(':', $line, 2);
                 $key = trim($key);
@@ -88,58 +123,59 @@ function parseFrontmatter(string $content): array {
         }
     }
 
-    return ['meta' => $meta, 'content' => $body];
+    $result = ['meta' => $meta, 'content' => $body];
+    $runtimeCache[$hash] = $result;
+    return $result;
 }
 
 /**
  * Erstellt einen konfigurierten CommonMark-Converter.
  */
 function createMarkdownConverter(): MarkdownConverter {
-    $environment = new Environment([
-        'html_input' => 'allow',  // ← HTML erlauben!
-    ]);
-    $environment->addExtension(new CommonMarkCoreExtension());
-    $environment->addExtension(new GithubFlavoredMarkdownExtension());
-    $environment->addExtension(new FootnoteExtension());
-    return new MarkdownConverter($environment);
+    static $converter = null;
+    if ($converter === null) {
+        $environment = new Environment([
+            'html_input' => 'allow',
+        ]);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $environment->addExtension(new FootnoteExtension());
+        $converter = new MarkdownConverter($environment);
+    }
+    return $converter;
 }
 
 /**
- * Webmentions Toilette Empfangung.
+ * Holt Webmentions mit aggressivem Caching (15 Minuten / 900 Sek).
  */
 function getWebmentions($pageUrl) {
-    // Falls du lokal testest, webmention.io braucht die echte Live-Domain
     if (str_contains($pageUrl, 'localhost') || str_contains($pageUrl, '127.0.0.1')) {
         $pageUrl = str_replace(['http://localhost', 'http://127.0.0.1'], 'https://janmontag.de', $pageUrl);
     }
 
-    $apiUrl = "https://webmention.io/api/mentions.jf2?target=" . urlencode($pageUrl);
-    
-    // 5 Sekunden Timeout, damit deine Seite nicht blockiert, falls die API lahmt
-    $context = stream_context_create([
-        'http' => ['timeout' => 5, 'user_agent' => 'NoCMS-Webmention-Fetcher/1.0']
-    ]);
-    
-    $response = @file_get_contents($apiUrl, false, $context);
-    if (!$response) return [];
-    
-    $data = json_decode($response, true);
-    return $data['children'] ?? [];
+    return getCachedData('webmentions_' . $pageUrl, 900, function() use ($pageUrl) {
+        $apiUrl = "https://webmention.io/api/mentions.jf2?target=" . urlencode($pageUrl);
+        $context = stream_context_create([
+            'http' => ['timeout' => 3, 'user_agent' => 'NoCMS-Webmention-Fetcher/1.0']
+        ]);
+        $response = @file_get_contents($apiUrl, false, $context);
+        if (!$response) return [];
+        $data = json_decode($response, true);
+        return $data['children'] ?? [];
+    });
 }
 
 /**
- * Durchsucht ein Ziel nach Webmention-Endpoints (In Headers oder HTML)
+ * Durchsucht ein Ziel nach Webmention-Endpoints
  */
 function discoverWebmentionEndpoint($targetUrl) {
     $context = stream_context_create([
-        'http' => ['timeout' => 6, 'user_agent' => 'NoCMS-Webmention-Sender/1.0']
+        'http' => ['timeout' => 4, 'user_agent' => 'NoCMS-Webmention-Sender/1.0']
     ]);
     
-    // Seite abrufen
     $html = @file_get_contents($targetUrl, false, $context);
     if (!$html) return null;
 
-    // 1. Check in den HTTP-Response-Headers (falls übergeben)
     if (isset($http_response_header)) {
         foreach ($http_response_header as $header) {
             if (preg_match('/^Link:\s*<([^>]+)>;\s*rel="([^"]+)"/i', $header, $matches)) {
@@ -150,7 +186,6 @@ function discoverWebmentionEndpoint($targetUrl) {
         }
     }
 
-    // 2. Check im HTML via Regex (Sucht nach rel="webmention" oder rel="http://webmention.org/")
     if (preg_match('#<link\s+[^>]*href="([^"]+)"\s+[^>]*rel="(http://webmention\.org/|webmention)"#i', $html, $matches) ||
         preg_match('#<link\s+[^>]*rel="(http://webmention\.org/|webmention)"\s+[^>]*href="([^"]+)"#i', $html, $matches)) {
         return end($matches);
@@ -160,7 +195,7 @@ function discoverWebmentionEndpoint($targetUrl) {
 }
 
 /**
- * Sendet eine Webmention von deiner Source-URL zur Target-URL
+ * Sendet eine Webmention
  */
 function sendWebmention($sourceUrl, $targetUrl) {
     $endpoint = discoverWebmentionEndpoint($targetUrl);
@@ -173,13 +208,12 @@ function sendWebmention($sourceUrl, $targetUrl) {
             'header'  => "Content-type: application/x-www-form-urlencoded\r\n" .
                          "User-Agent: NoCMS-Webmention-Sender/1.0\r\n",
             'content' => $data,
-            'timeout' => 6
+            'timeout' => 4
         ]
     ];
 
     $context = stream_context_create($options);
     $response = @file_get_contents($endpoint, false, $context);
-    
     return $response !== false;
 }
 
@@ -187,14 +221,11 @@ function sendWebmention($sourceUrl, $targetUrl) {
  * Automatisch alle externen Links aus dem Post extrahieren und anpingen
  */
 function sendOutgoingWebmentionsFromHtml($htmlContent, $sourceUrl) {
-    // Alle href-Attribute aus dem HTML fischen
     preg_match_all('/<a[^>]+href=["\']([^"\']+)["\']/i', $htmlContent, $matches);
     if (empty($matches[1])) return;
 
     foreach ($matches[1] as $url) {
-        // Nur echte externe HTTP/HTTPS Links anpingen (nicht deine eigenen, keine Anker)
         if (str_starts_with($url, 'http') && !str_contains($url, 'janmontag.de')) {
-            // Sende im Hintergrund (Fehler ignorieren wir geräuschlos)
             sendWebmention($sourceUrl, $url);
         }
     }

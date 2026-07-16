@@ -1,7 +1,5 @@
 /* style.css — NoCMS Theme 2026 */
-/* Wurstgesichter des Todes */
 
-/* FARB-VARIABLEN (Standard: Dark Theme) */
 :root {
     --bg-color: #050505;
     --text-color: rgba(255, 255, 255, 0.85);
@@ -10,7 +8,6 @@
     --border-link: rgba(255, 255, 255, 0.3);
     --border-link-hover: rgba(255, 255, 255, 1);
     
-    /* Code-Blöcke & Widgets */
     --code-bg-inline: rgba(255, 255, 255, 0.08);
     --code-bg-block: #111;
     --code-border: #222;
@@ -18,7 +15,6 @@
     --footer-link: rgba(255, 255, 255, 0.4);
 }
 
-/* LIGHT THEME (Wird per JS über data-theme="light" getriggert) */
 :root[data-theme="light"] {
     --bg-color: #fcfcfc;
     --text-color: rgba(20, 20, 20, 0.85);
@@ -34,7 +30,6 @@
     --footer-link: rgba(0, 0, 0, 0.55);
 }
 
-/* GLOBAL RESET & TYPOGRAFIE */
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -44,6 +39,8 @@
 }
 
 body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-display: swap; /* Erzwingt, dass sofort die Systemschrift angezeigt wird */
     font: 1.1rem 'Inter', system-ui, -apple-system, sans-serif;
     color: var(--text-color);
     background: var(--bg-color);
@@ -52,7 +49,11 @@ body {
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    text-rendering: optimizeSpeed;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    /* Verhindert Layout-Verschiebungen während des Schriftdownloads: */
+    size-adjust: 100%; 
+    text-size-adjust: 100%;
 }
 
 h1, h2, h3, h4 {
@@ -66,9 +67,7 @@ a:link, a:visited, a:hover {
     text-decoration: none;
 }
 
-/* ==========================================================================
-   LAYOUT 1: STARTSEITE (Zentrierter Denis-Moulin-Look)
-   ========================================================================== */
+/* LAYOUT 1: STARTSEITE */
 body.layout-index main {
     min-height: 100vh;
     padding: 2rem;
@@ -109,6 +108,8 @@ body.layout-index li {
     align-items: center;
     opacity: .3;
     transition: all ease-out .3s;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 40px;
 }
 
 body.layout-index ul:hover li:hover {
@@ -156,9 +157,7 @@ body.layout-index .archive-link:hover {
     body.layout-index li a.title { order: 2; flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; border-bottom: .5px solid var(--border-link); }
 }
 
-/* ==========================================================================
-   LAYOUT 2: ARTIKELSEITE (Fokussiertes Lese-Layout)
-   ========================================================================== */
+/* LAYOUT 2: ARTIKELSEITE */
 body.layout-post main {
     min-height: 100vh;
     padding: 6rem 2rem;
@@ -237,7 +236,6 @@ body.layout-post small {
     margin-bottom: 2.5rem;
 }
 
-/* Prism.js Code-Blöcke */
 body.layout-post pre {
     background: var(--code-bg-block) !important;
     padding: 1.25rem !important;
@@ -262,9 +260,7 @@ body.layout-post pre code {
     border-radius: 0;
 }
 
-/* ==========================================================================
-   GLOBAL FOOTER (Unscheinbar & Mittig ganz unten)
-   ========================================================================= */
+/* GLOBAL FOOTER */
 .site-footer {
     width: 100%;
     text-align: center;
@@ -297,9 +293,7 @@ body.layout-post pre code {
     opacity: 0.7;
 }
 
-/* ==========================================================================
-   LAST.FM WIDGET (oben rechts, Index)
-   ========================================================================== */
+/* LAST.FM WIDGET */
 .lastfm-widget {
     position: absolute;
     top: 2rem;
@@ -365,7 +359,6 @@ body.layout-post pre code {
     }
 }
 
-/* Globale Absicherung für den Light-Mode-Wechsel */
 html[data-theme="light"] body {
     background: var(--bg-color) !important;
     color: var(--text-color) !important;

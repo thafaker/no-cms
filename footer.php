@@ -16,4 +16,4 @@
         <?php include 'counter.php'; ?>
     </div>
 </footer>
-<script src="/assets/script.js"></script>
+<script defer src="/assets/script.js"></script>

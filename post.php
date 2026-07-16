@@ -1,16 +1,13 @@
 <?php
 // post.php of NoCMS Jan Montag 2026
-// Wurstwasser --> Arschwasser
 require_once 'inc/functions.php';
 
-// 1. Den sauberen Slug aus der URL holen (wird von Caddy via URL-Rewrite übergeben)
 $slug = $_GET['slug'] ?? '';
 $slug = trim($slug, '/');
 
 $postsDir = __DIR__ . '/posts/';
 $targetFile = null;
 
-// 2. Passende Datei im posts/-Ordner anhand des Slugs finden
 if (!empty($slug) && is_dir($postsDir)) {
     $files = glob($postsDir . '*.md');
     foreach ($files as $file) {
@@ -24,7 +21,6 @@ if (!empty($slug) && is_dir($postsDir)) {
     }
 }
 
-// 3. Fallback auf die 404-Seite, falls die Datei nicht existiert
 if (!$targetFile || !is_file($targetFile)) {
     http_response_code(404);
     $targetFile = $postsDir . 'not-found.md';
@@ -33,7 +29,6 @@ if (!$targetFile || !is_file($targetFile)) {
     }
 }
 
-// 4. Inhalt laden, Frontmatter parsen und über CommonMark jagen
 $content = file_get_contents($targetFile);
 $parsed = parseFrontmatter($content);
 $meta = $parsed['meta'];
@@ -42,11 +37,9 @@ $markdown = $parsed['content'];
 $converter = createMarkdownConverter();
 $htmlContent = html_entity_decode($converter->convert($markdown)->getContent());
 
-// 5. WEBMENTIONS FÜR DIESEN POST HOLEN (Incoming)
 $currentUrl = "https://janmontag.de/" . $slug;
 $webmentions = getWebmentions($currentUrl);
 
-// Sortierung in Interaktionen (Likes/Reposts) und Text-Kommentare
 $interactions = [];
 $comments = [];
 
@@ -59,45 +52,34 @@ foreach ($webmentions as $mention) {
     }
 }
 
-// Header-Variablen vorbereiten
 $pageTitle = ($meta['title'] ?? str_replace('-', ' ', $slug)) . " — Jan Montag";
 $bodyClass = "layout-post";
 require_once 'inc/header.php';
 ?>
-    <!-- Prism.js Support für Code-Syntax-Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
     
     <main>
-        <article class="h-entry"> <!-- h-entry für semantisches IndieWeb Parsing -->
-            <!-- Subtile Zurück-Navigation -->
+        <article class="h-entry">
             <nav class="back-nav">
                 <a class="back-link" href="/">&larr; Index</a>
             </nav>
 
-            <!-- Artikel-Header -->
             <header>
                 <h1 class="p-name"><?= htmlspecialchars($meta['title'] ?? str_replace('-', ' ', $slug)); ?></h1>
                 <a class="u-url" href="<?= $currentUrl ?>" style="display:none;"></a>
             </header>
             
-            <!-- Der gerenderte Content aus deinem NoCMS Core -->
             <div class="entry-content e-content">
                 <?= $htmlContent; ?>
             </div>
 
-            <!-- Feedback-Sektion (E-Mail & Fediverse) -->
             <div class="feedback-container" style="margin-top: 3rem; padding: 1.2rem; background: var(--bg-secondary); border: 1px dashed var(--border); font-size: 0.85rem; line-height: 1.6; border-radius: 4px;">
-                
-                <!-- 1. E-Mail Feedback -->
                 <div class="email-feedback" style="margin-bottom: 1.2rem;">
                     <?php 
                         $email = "kommentare@wochenstart.com";
                         $subject = "Feedback zu: " . ($meta['title'] ?? str_replace('-', ' ', $slug));
-                        
-                        // Der vordefinierte E-Mail-Inhalt (URL-encoded für den mailto-Link)
                         $body = "(Anmerkungen:)\n\n---\nBeitrag: " . $currentUrl;
-                        
                         $mailtoUrl = "mailto:" . $email . "?subject=" . rawurlencode($subject) . "&body=" . rawurlencode($body);
                     ?>
                     <p style="margin: 0;">
@@ -105,7 +87,6 @@ require_once 'inc/header.php';
                     </p>
                 </div>
 
-                <!-- 2. Dynamisches Fediverse-Feedback -->
                 <?php if (!empty($meta['fediverse_url'])): ?>
                 <div class="fediverse-feedback" style="margin-bottom: 1.2rem;">
                     <p style="margin: 0;">
@@ -115,12 +96,7 @@ require_once 'inc/header.php';
                 <?php endif; ?>
             </div>
 
-            <!-- ==========================================================================
-               WEBMENTIONS SEKTION
-               ========================================================================== -->
             <section class="webmentions-container" style="margin-top: 1rem; padding-top: 2rem; border-top: 1px dotted var(--line-color); font-size: 0.9rem;">
-                
-                <!-- 1. Likes & Reposts (Kompakte Avatare) -->
                 <?php if (!empty($interactions)): ?>
                     <div class="webmention-interactions" style="margin-bottom: 2rem; opacity: 0.8;">
                         <strong>Interaktionen:</strong>
@@ -131,14 +107,13 @@ require_once 'inc/header.php';
                                 $actionText = ($inter['wm-property'] === 'like-of') ? 'gefällt das' : 'hat geshared';
                             ?>
                                 <a href="<?= htmlspecialchars($inter['wm-source'] ?? '#') ?>" title="<?= htmlspecialchars($author['name'] ?? 'Jemand') ?> <?= $actionText ?>" target="_blank" rel="noopener">
-                                    <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; margin: 0; border: 1px solid var(--line-color);">
+                                    <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; margin: 0; border: 1px solid var(--line-color);" loading="lazy">
                                 </a>
                             <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endif; ?>
 
-                <!-- 2. Echte Text-Erwähnungen & Antworten -->
                 <div class="webmention-comments">
                     <h3 style="font-size: 1rem; margin-bottom: 1.5rem;">Reaktionen (<?= count($comments) ?>)</h3>
                     <?php if (!empty($comments)): ?>
@@ -148,11 +123,10 @@ require_once 'inc/header.php';
                                 $avatar = !empty($author['photo']) ? $author['photo'] : 'https://herrmontag.de/content/images/2026/03/avar.jpg';
                                 $pubDate = isset($comment['published']) ? date("d. M Y", strtotime($comment['published'])) : 'Kürzlich';
                                 $text = $comment['content']['text'] ?? $comment['content']['html'] ?? 'Hat diesen Beitrag erwähnt.';
-                                // Text einkürzen, falls jemand ein gigantisches Posting verlinkt
                                 if (strlen($text) > 280) $text = substr(strip_tags($text), 0, 280) . '...';
                             ?>
                                 <div class="webmention-item" style="display: flex; gap: 1rem; align-items: flex-start;">
-                                    <img src="<?= htmlspecialchars($avatar) ?>" alt="" style="width: 36px; height: 36px; border-radius: 50%; margin: 0; flex-shrink: 0; border: 1px solid var(--line-color);">
+                                    <img src="<?= htmlspecialchars($avatar) ?>" alt="" style="width: 36px; height: 36px; border-radius: 50%; margin: 0; flex-shrink: 0; border: 1px solid var(--line-color);" loading="lazy">
                                     <div>
                                         <div style="opacity: 0.6; font-size: 0.8rem;">
                                             <a href="<?= htmlspecialchars($author['url'] ?? '#') ?>" target="_blank" rel="noopener" style="font-weight: 600; border-bottom: none;">
