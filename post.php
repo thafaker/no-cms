@@ -149,7 +149,7 @@ require_once 'inc/header.php';
                 </div>
 
                     <p style="margin: 1rem 0 0 0; font-size: 0.8rem; opacity: 0.7;">
-                        Folge mir im Fediverse: <a href="https://social.janmontag.de/@janmontag" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">@jan@janmontag.de</a>
+                        Folge mir im Fediverse: <a href="https://social.janmontag.de/@janmontag" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">@janmontag@social.janmontag.de</a>
                     </p>
                 </div>
             </section>
